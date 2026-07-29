@@ -545,7 +545,7 @@ with tab2:
                 </div>
                 """, unsafe_allow_html=True)
 
-                        if st.session_state.lang == 'ro':
+            if st.session_state.lang == 'ro':
                 st.caption(f"Bara arata istoricul total al duelului: {total_defecte} defecte vs {total_ok} OK-uri. "
                           "La inceput Testerul domina (gaseste multe defecte). "
                           "La final, cand bara incepe sa se coloreze verde, Proiectantul preia controlul.")
