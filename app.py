@@ -556,12 +556,17 @@ with tab2:
                     if rez2 == "DEFECT":
                         proiectant.confirma_esec(cota_mod)
                         fara_defect = 0
+
         if st.session_state.lang == 'ro':
-            st.caption("Bara arata istoricul total al duelului: la inceput Testerul domina (galben), "
-                      "la final Proiectantul preia controlul (verde). Convergenta = echilibru.")
+            st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte (98%). "
+                      "Testerul domina clar duelul, fortand Proiectantul sa stranga tolerantele "
+                      "pana cand ansamblul devine sigur. Fara presiunea Testerului, "
+                      "Proiectantul ar fi lasat tolerante largi si ansamblul ar fi produs rebuturi.")
         else:
-            st.caption("The bar shows the total duel history: initially the Tester dominates (yellow), "
-                      "at the end the Designer takes control (green). Convergence = balance.")     
+            st.caption("The bar shows the total duel history. Yellow = Tester found defects (98%). "
+                      "The Tester clearly dominates, forcing the Designer to tighten tolerances "
+                      "until the assembly becomes safe. Without the Tester's pressure, "
+                      "the Designer would keep wide tolerances and the assembly would produce defects.")
             
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
