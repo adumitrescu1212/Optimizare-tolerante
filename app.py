@@ -311,7 +311,6 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
 
-
 # ================================================================
 # TAB 2: OPTIMIZARE
 # ================================================================
@@ -389,7 +388,7 @@ with tab2:
             if it % 10 == 0:
                 progress_bar.progress(min(iteratii / 300, 1.0))
             
-                        if rezultat == "DEFECT":
+            if rezultat == "DEFECT":
                 fara_defect = 0
                 proiectant.primeste_raport(True, cota, beta)
                 if st.session_state.lang == 'ro':
@@ -428,6 +427,31 @@ with tab2:
                         <strong>Action:</strong> The Designer attempts to widen tolerances to reduce cost.
                     </div>
                     """, unsafe_allow_html=True)
+                
+                if fara_defect >= 2:
+                    if st.session_state.lang == 'ro':
+                        status.markdown(f"""
+                        <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                            <strong>Convergenta atinsa in {iteratii} iteratii.</strong><br>
+                            Sistemul a identificat frontiera de fezabilitate. Tolerantele optime garanteaza functionalitatea ansamblului.
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        status.markdown(f"""
+                        <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                            <strong>Convergence reached in {iteratii} iterations.</strong><br>
+                            The system identified the feasibility boundary. The optimal tolerances guarantee assembly functionality.
+                        </div>
+                        """, unsafe_allow_html=True)
+                    break
+                
+                cota_mod = proiectant.primeste_raport(False, None, beta)
+                if cota_mod is not False:
+                    tol_noi = proiectant.propune_tolerante()
+                    rez2, _, _ = tester.ataca(tol_noi)
+                    if rez2 == "DEFECT":
+                        proiectant.confirma_esec(cota_mod)
+                        fara_defect = 0
         
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
@@ -499,7 +523,6 @@ with tab2:
         })
         st.dataframe(df_critic, use_container_width=True, hide_index=True)
         
-        # Extragem cota într-o variabilă sigură pentru afișare
         cota_afisata = cota_crit + 1 if cota_crit is not None else "-"
         
         if st.session_state.lang == 'ro':
@@ -507,7 +530,7 @@ with tab2:
                 "> **Interpretare:** Tabelul arata combinatia exacta de dimensiuni care produce cel mai mic joc "
                 f"(joc = **{joc_crit:.4f} mm**). Aceste valori trebuie introduse in SolidWorks pentru validarea "
                 "experimentala. Coloana *Directie* indica daca dimensiunea trebuie setata la maximul sau minimul "
-                f"tolerantei. Cota **{cota_afisata}** este cea mai solicitată în această configurație."
+                f"tolerantei. Cota **{cota_afisata}** este cea mai solicitata in aceasta configuratie."
             )
         else:
             st.markdown(
@@ -521,7 +544,6 @@ with tab2:
         st.success("👈 " + ("Mergi la tab-ul Grafice." if st.session_state.lang == 'ro' else "Go to Charts tab."))
     else:
         st.info(t['wait'])
-
 # ================================================================
 # TAB 3: GRAFICE
 # ================================================================
