@@ -501,7 +501,7 @@ with tab2:
                             <strong>Testerul</strong><br>
                             <small>Beta: {beta:.3f}</small>
                         </div>
-                 
+                 </div>
                     <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
                         <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
                             {f'DEFECT {proc_defecte}%' if proc_defecte > 15 else ''}
