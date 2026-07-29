@@ -153,7 +153,7 @@ if st.session_state.theme == 'dark':
     """, unsafe_allow_html=True)
 
 # ---------- CSS tab-uri ----------
-# ---------- CSS global modern ----------
+# ---------- CSS modern ----------
 st.markdown("""
 <style>
     /* Font modern */
@@ -165,35 +165,31 @@ st.markdown("""
     /* Tab-uri */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        background: rgba(255,255,255,0.6);
-        backdrop-filter: blur(10px);
+        background: white;
         border-radius: 12px;
         padding: 6px;
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.06);
     }
     .stTabs [data-baseweb="tab"] {
         border-radius: 8px;
         padding: 6px 18px;
         font-size: 15px;
         font-weight: 500;
-        transition: all 0.2s ease;
     }
     .stTabs [aria-selected="true"] {
         background: white;
-        box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+        box-shadow: 0 2px 8px rgba(102,126,234,0.12);
     }
     
-    /* Carduri glass */
+    /* Carduri */
     div[style*="background: #f8f9fa"] {
-        background: rgba(255,255,255,0.7) !important;
-        backdrop-filter: blur(12px) !important;
+        background: white !important;
         border: 1px solid rgba(0,0,0,0.06) !important;
         border-radius: 12px !important;
-        transition: all 0.3s ease !important;
+        transition: box-shadow 0.3s ease !important;
     }
     div[style*="background: #f8f9fa"]:hover {
-        box-shadow: 0 8px 24px rgba(102,126,234,0.1) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 16px rgba(102,126,234,0.08) !important;
     }
     
     /* Buton principal */
@@ -205,21 +201,16 @@ st.markdown("""
         transition: all 0.3s ease !important;
     }
     div[data-testid="stButton"] button[kind="primary"]:hover {
-        box-shadow: 0 6px 20px rgba(102,126,234,0.4) !important;
+        box-shadow: 0 6px 20px rgba(102,126,234,0.35) !important;
         transform: translateY(-1px) !important;
     }
     
     /* Metrici */
     div[data-testid="stMetric"] {
-        background: rgba(255,255,255,0.7) !important;
-        backdrop-filter: blur(12px) !important;
+        background: white !important;
         border: 1px solid rgba(0,0,0,0.06) !important;
         border-radius: 12px !important;
         padding: 16px !important;
-        transition: all 0.3s ease !important;
-    }
-    div[data-testid="stMetric"]:hover {
-        box-shadow: 0 8px 24px rgba(102,126,234,0.08) !important;
     }
     
     /* Tabele */
@@ -229,20 +220,18 @@ st.markdown("""
         border: 1px solid rgba(0,0,0,0.06) !important;
     }
     
-    /* Background general */
+    /* Background */
     .stApp {
-        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%) !important;
+        background: #f8f9fa !important;
     }
     
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background: rgba(255,255,255,0.8) !important;
-        backdrop-filter: blur(16px) !important;
+        background: white !important;
         border-right: 1px solid rgba(0,0,0,0.06) !important;
     }
 </style>
 """, unsafe_allow_html=True)
-
 # ---------- Tab-uri ----------
 tab1, tab2, tab3, tab4, tab5 = st.tabs([t['tab1'], t['tab2'], t['tab3'], t['tab4'], t['tab5']])
 
