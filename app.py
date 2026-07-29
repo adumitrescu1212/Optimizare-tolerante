@@ -356,7 +356,7 @@ with tab2:
         proiectant = AgentProiectant(valori_nominale, tolerante_init, delta=delta)
         tester = AgentTester(alpha=alpha, max_iteratii=500)
         
-                status = st.empty()
+        status = st.empty()
         c1, c2, c3 = st.columns(3)
         m_iter = c1.empty()
         m_cost = c2.empty()
