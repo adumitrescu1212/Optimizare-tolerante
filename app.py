@@ -558,12 +558,12 @@ with tab2:
                         fara_defect = 0
 
         if st.session_state.lang == 'ro':
-            st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte (98%). "
+            st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte "
                       "Testerul domina clar duelul, fortand Proiectantul sa stranga tolerantele "
                       "pana cand ansamblul devine sigur. Fara presiunea Testerului, "
                       "Proiectantul ar fi lasat tolerante largi si ansamblul ar fi produs rebuturi.")
         else:
-            st.caption("The bar shows the total duel history. Yellow = Tester found defects (98%). "
+            st.caption("The bar shows the total duel history. Yellow = Tester found defects  "
                       "The Tester clearly dominates, forcing the Designer to tighten tolerances "
                       "until the assembly becomes safe. Without the Tester's pressure, "
                       "the Designer would keep wide tolerances and the assembly would produce defects.")
