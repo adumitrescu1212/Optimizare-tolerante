@@ -556,7 +556,14 @@ with tab2:
                     if rez2 == "DEFECT":
                         proiectant.confirma_esec(cota_mod)
                         fara_defect = 0
-                        
+             
+        st.session_state['istoric'] = istoric
+        st.session_state['proiectant'] = proiectant
+        st.session_state['iteratii'] = iteratii
+        
+        st.divider()
+        st.header("📊 " + ("Rezultate finale" if st.session_state.lang == 'ro' else "Final Results"))
+
             if st.session_state.lang == 'ro':
                 st.caption(f"Bara arata istoricul total al duelului: {total_defecte} defecte vs {total_ok} OK-uri. "
                           "La inceput Testerul domina (gaseste multe defecte). "
@@ -565,14 +572,6 @@ with tab2:
                 st.caption(f"The bar shows the total duel history: {total_defecte} defects vs {total_ok} OKs. "
                           "At the start, the Tester dominates (finds many defects). "
                           "At the end, as the bar turns green, the Designer takes control.")
-        
-        
-        st.session_state['istoric'] = istoric
-        st.session_state['proiectant'] = proiectant
-        st.session_state['iteratii'] = iteratii
-        
-        st.divider()
-        st.header("📊 " + ("Rezultate finale" if st.session_state.lang == 'ro' else "Final Results"))
         
         c1, c2, c3 = st.columns(3)
         c1.metric(t['iterations'], f"{iteratii}")
