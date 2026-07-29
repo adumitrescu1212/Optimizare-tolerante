@@ -428,7 +428,6 @@ with tab2:
         proiectant = AgentProiectant(valori_nominale, tolerante_init, delta=delta)
         tester = AgentTester(alpha=alpha, max_iteratii=500)
         
-        status = st.empty()
         c1, c2, c3 = st.columns(3)
         m_iter = c1.empty()
         m_cost = c2.empty()
@@ -547,19 +546,11 @@ with tab2:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            time.sleep(0.8)
+            
             if fara_defect >= 2:
                 break
             
             if rezultat == "OK":
-                cota_mod = proiectant.primeste_raport(False, None, beta)
-                if cota_mod is not False:
-                    tol_noi = proiectant.propune_tolerante()
-                    rez2, _, _ = tester.ataca(tol_noi)
-                    if rez2 == "DEFECT":
-                        proiectant.confirma_esec(cota_mod)
-                        fara_defect = 0
-                
                 cota_mod = proiectant.primeste_raport(False, None, beta)
                 if cota_mod is not False:
                     tol_noi = proiectant.propune_tolerante()
