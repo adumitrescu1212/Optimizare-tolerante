@@ -511,10 +511,6 @@ with tab2:
                             {f'OK {proc_ok}%' if proc_ok > 15 else ''}
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.8rem; color: #888;">
-                        <span>Total DEFECT-uri: {total_defecte}</span>
-                        <span>Total OK-uri: {total_ok}</span>
-                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
@@ -548,10 +544,6 @@ with tab2:
                         <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
                             {f'OK {proc_ok}%' if proc_ok > 15 else ''}
                         </div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.8rem; color: #888;">
-                        <span>Total DEFECTs: {total_defecte}</span>
-                        <span>Total OKs: {total_ok}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
