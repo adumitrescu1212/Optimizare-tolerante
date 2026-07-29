@@ -356,16 +356,20 @@ with tab2:
         proiectant = AgentProiectant(valori_nominale, tolerante_init, delta=delta)
         tester = AgentTester(alpha=alpha, max_iteratii=500)
         
-        status = st.empty()
+                status = st.empty()
         c1, c2, c3 = st.columns(3)
         m_iter = c1.empty()
         m_cost = c2.empty()
         m_beta = c3.empty()
-        progress_bar = st.progress(0)
+        
+        # Container pentru arena luptei
+        arena = st.empty()
         
         istoric = []
         fara_defect = 0
         iteratii = 0
+        total_defecte = 0
+        total_ok = 0
         
         for it in range(300):
             iteratii = it + 1
@@ -384,66 +388,113 @@ with tab2:
             m_iter.metric(t['iterations'], f"{iteratii}")
             m_cost.metric(t['cost_opt'], f"{cost:.2f}")
             m_beta.metric("Beta", f"{beta:.3f}")
-
-            if it % 10 == 0:
-                progress_bar.progress(min(iteratii / 300, 1.0))
             
+            # Calcul proporție pentru bară
             if rezultat == "DEFECT":
+                total_defecte += 1
                 fara_defect = 0
                 proiectant.primeste_raport(True, cota, beta)
-                if st.session_state.lang == 'ro':
-                    status.markdown(f"""
-                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                        <strong>Iteratia {iteratii}:</strong> Agentul Tester a descoperit o configuratie critica.<br>
-                        <strong>Joc minim:</strong> {joc:.4f} mm &nbsp;|&nbsp; 
-                        <strong>Cota responsabila:</strong> {cota+1} &nbsp;|&nbsp;
-                        <strong>Actiune:</strong> Proiectantul strange toleranta la cota {cota+1}.
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    status.markdown(f"""
-                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                        <strong>Iteration {iteratii}:</strong> The Tester discovered a critical configuration.<br>
-                        <strong>Minimum gap:</strong> {joc:.4f} mm &nbsp;|&nbsp; 
-                        <strong>Responsible dimension:</strong> {cota+1} &nbsp;|&nbsp;
-                        <strong>Action:</strong> The Designer tightens the tolerance for dimension {cota+1}.
-                    </div>
-                    """, unsafe_allow_html=True)
+                culoare = "#ffc107"
+                actiune = f"strange toleranta la cota {cota+1}"
             else:
+                total_ok += 1
                 fara_defect += 1
-                if st.session_state.lang == 'ro':
-                    status.markdown(f"""
-                    <div style="background: #d4edda; border-left: 4px solid #28a745; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                        <strong>Iteratia {iteratii}:</strong> Agentul Tester nu a gasit nicio vulnerabilitate.<br>
-                        <strong>Joc minim:</strong> {joc:.4f} mm &nbsp;|&nbsp;
-                        <strong>Actiune:</strong> Proiectantul incearca sa largeasca tolerantele pentru a reduce costul.
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    status.markdown(f"""
-                    <div style="background: #d4edda; border-left: 4px solid #28a745; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                        <strong>Iteration {iteratii}:</strong> The Tester found no vulnerabilities.<br>
-                        <strong>Minimum gap:</strong> {joc:.4f} mm &nbsp;|&nbsp;
-                        <strong>Action:</strong> The Designer attempts to widen tolerances to reduce cost.
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                if fara_defect >= 2:
-                    if st.session_state.lang == 'ro':
-                        status.markdown(f"""
-                        <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                            <strong>Convergenta atinsa in {iteratii} iteratii.</strong><br>
-                            Sistemul a identificat frontiera de fezabilitate. Tolerantele optime garanteaza functionalitatea ansamblului.
+                culoare = "#28a745"
+                actiune = "incearca sa largeasca tolerantele"
+            
+            total_actiuni = total_defecte + total_ok
+            proc_defecte = int(100 * total_defecte / total_actiuni) if total_actiuni > 0 else 0
+            proc_ok = 100 - proc_defecte
+            
+            # Arena luptei
+            if st.session_state.lang == 'ro':
+                arena.markdown(f"""
+                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 20px; background: #fafafa; margin: 10px 0;">
+                    <h4 style="text-align: center; margin-top: 0;">Arena Luptei</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 2rem;">🔵</div>
+                            <strong>Proiectantul</strong><br>
+                            <small>Cost: {cost:.2f}</small>
                         </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        status.markdown(f"""
-                        <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
-                            <strong>Convergence reached in {iteratii} iterations.</strong><br>
-                            The system identified the feasibility boundary. The optimal tolerances guarantee assembly functionality.
+                        <div style="text-align: center; flex: 2;">
+                            <div style="font-size: 1.5rem; color: {culoare}; font-weight: bold;">
+                                Iteratia {iteratii}: {rezultat}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #555;">
+                                Joc = {joc:.4f} mm | {actiune}
+                            </div>
                         </div>
-                        """, unsafe_allow_html=True)
-                    break
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 2rem;">🔴</div>
+                            <strong>Testerul</strong><br>
+                            <small>Beta: {beta:.3f}</small>
+                        </div>
+                    </div>
+                    <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
+                        <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
+                            {f'DEFECT {proc_defecte}%' if proc_defecte > 15 else ''}
+                        </div>
+                        <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
+                            {f'OK {proc_ok}%' if proc_ok > 15 else ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.8rem; color: #888;">
+                        <span>Total DEFECT-uri: {total_defecte}</span>
+                        <span>Total OK-uri: {total_ok}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                arena.markdown(f"""
+                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 20px; background: #fafafa; margin: 10px 0;">
+                    <h4 style="text-align: center; margin-top: 0;">Battle Arena</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 2rem;">🔵</div>
+                            <strong>Designer</strong><br>
+                            <small>Cost: {cost:.2f}</small>
+                        </div>
+                        <div style="text-align: center; flex: 2;">
+                            <div style="font-size: 1.5rem; color: {culoare}; font-weight: bold;">
+                                Iteration {iteratii}: {rezultat}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #555;">
+                                Gap = {joc:.4f} mm | {actiune}
+                            </div>
+                        </div>
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 2rem;">🔴</div>
+                            <strong>Tester</strong><br>
+                            <small>Beta: {beta:.3f}</small>
+                        </div>
+                    </div>
+                    <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
+                        <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
+                            {f'DEFECT {proc_defecte}%' if proc_defecte > 15 else ''}
+                        </div>
+                        <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
+                            {f'OK {proc_ok}%' if proc_ok > 15 else ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.8rem; color: #888;">
+                        <span>Total DEFECTs: {total_defecte}</span>
+                        <span>Total OKs: {total_ok}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            if fara_defect >= 2:
+                break
+            
+            if rezultat == "OK":
+                cota_mod = proiectant.primeste_raport(False, None, beta)
+                if cota_mod is not False:
+                    tol_noi = proiectant.propune_tolerante()
+                    rez2, _, _ = tester.ataca(tol_noi)
+                    if rez2 == "DEFECT":
+                        proiectant.confirma_esec(cota_mod)
+                        fara_defect = 0
                 
                 cota_mod = proiectant.primeste_raport(False, None, beta)
                 if cota_mod is not False:
