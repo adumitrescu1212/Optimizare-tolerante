@@ -556,6 +556,16 @@ with tab2:
                     if rez2 == "DEFECT":
                         proiectant.confirma_esec(cota_mod)
                         fara_defect = 0
+                        
+            if st.session_state.lang == 'ro':
+                st.caption(f"Bara arata istoricul total al duelului: {total_defecte} defecte vs {total_ok} OK-uri. "
+                          "La inceput Testerul domina (gaseste multe defecte). "
+                          "La final, cand bara incepe sa se coloreze verde, Proiectantul preia controlul.")
+            else:
+                st.caption(f"The bar shows the total duel history: {total_defecte} defects vs {total_ok} OKs. "
+                          "At the start, the Tester dominates (finds many defects). "
+                          "At the end, as the bar turns green, the Designer takes control.")
+        
         
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
@@ -608,15 +618,6 @@ with tab2:
         })
         st.dataframe(df_comp, use_container_width=True, hide_index=True)
 
-            if st.session_state.lang == 'ro':
-                st.caption(f"Bara arata istoricul total al duelului: {total_defecte} defecte vs {total_ok} OK-uri. "
-                          "La inceput Testerul domina (gaseste multe defecte). "
-                          "La final, cand bara incepe sa se coloreze verde, Proiectantul preia controlul.")
-            else:
-                st.caption(f"The bar shows the total duel history: {total_defecte} defects vs {total_ok} OKs. "
-                          "At the start, the Tester dominates (finds many defects). "
-                          "At the end, as the bar turns green, the Designer takes control.")
-        
          # ---------- Combinația critică ----------
         st.divider()
         st.header("🔍 " + ("Combinația critică (cel mai rău caz)" if st.session_state.lang == 'ro' else "Critical Combination (Worst Case)"))
