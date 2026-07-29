@@ -153,11 +153,93 @@ if st.session_state.theme == 'dark':
     """, unsafe_allow_html=True)
 
 # ---------- CSS tab-uri ----------
+# ---------- CSS global modern ----------
 st.markdown("""
 <style>
-    .stTabs [data-baseweb="tab-list"] { gap: 6px; background-color: #f0f2f6; border-radius: 10px; padding: 6px; }
-    .stTabs [data-baseweb="tab"] { border-radius: 8px; padding: 6px 18px; font-size: 15px; font-weight: 500; }
-    .stTabs [aria-selected="true"] { background-color: #ffffff; box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+    /* Font modern */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Tab-uri */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 6px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px;
+        padding: 6px 18px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .stTabs [aria-selected="true"] {
+        background: white;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+    }
+    
+    /* Carduri glass */
+    div[style*="background: #f8f9fa"] {
+        background: rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease !important;
+    }
+    div[style*="background: #f8f9fa"]:hover {
+        box-shadow: 0 8px 24px rgba(102,126,234,0.1) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Buton principal */
+    div[data-testid="stButton"] button[kind="primary"] {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    div[data-testid="stButton"] button[kind="primary"]:hover {
+        box-shadow: 0 6px 20px rgba(102,126,234,0.4) !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Metrici */
+    div[data-testid="stMetric"] {
+        background: rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        transition: all 0.3s ease !important;
+    }
+    div[data-testid="stMetric"]:hover {
+        box-shadow: 0 8px 24px rgba(102,126,234,0.08) !important;
+    }
+    
+    /* Tabele */
+    .stDataFrame {
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+    }
+    
+    /* Background general */
+    .stApp {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%) !important;
+    }
+    
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: rgba(255,255,255,0.8) !important;
+        backdrop-filter: blur(16px) !important;
+        border-right: 1px solid rgba(0,0,0,0.06) !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
