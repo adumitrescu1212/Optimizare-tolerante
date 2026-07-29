@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import time
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
@@ -483,7 +484,7 @@ with tab2:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            
+            time.sleep(0.8)
             if fara_defect >= 2:
                 break
             
