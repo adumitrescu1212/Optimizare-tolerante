@@ -389,24 +389,45 @@ with tab2:
             if it % 10 == 0:
                 progress_bar.progress(min(iteratii / 300, 1.0))
             
-            if rezultat == "DEFECT":
+                        if rezultat == "DEFECT":
                 fara_defect = 0
                 proiectant.primeste_raport(True, cota, beta)
-                status.warning(f"{t['defect']} {cota+1} | {t['joc_label']} {joc:.4f} mm")
+                if st.session_state.lang == 'ro':
+                    status.markdown(f"""
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                        <strong>Iteratia {iteratii}:</strong> Agentul Tester a descoperit o configuratie critica.<br>
+                        <strong>Joc minim:</strong> {joc:.4f} mm &nbsp;|&nbsp; 
+                        <strong>Cota responsabila:</strong> {cota+1} &nbsp;|&nbsp;
+                        <strong>Actiune:</strong> Proiectantul strange toleranta la cota {cota+1}.
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    status.markdown(f"""
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                        <strong>Iteration {iteratii}:</strong> The Tester discovered a critical configuration.<br>
+                        <strong>Minimum gap:</strong> {joc:.4f} mm &nbsp;|&nbsp; 
+                        <strong>Responsible dimension:</strong> {cota+1} &nbsp;|&nbsp;
+                        <strong>Action:</strong> The Designer tightens the tolerance for dimension {cota+1}.
+                    </div>
+                    """, unsafe_allow_html=True)
             else:
                 fara_defect += 1
-                status.success(f"{t['ok']} | {t['joc_label']} {joc:.4f} mm")
-                if fara_defect >= 2:
-                    status.info(f"{t['conv']} {iteratii}!")
-                    break
-                cota_mod = proiectant.primeste_raport(False, None, beta)
-                if cota_mod is not False:
-                    tol_noi = proiectant.propune_tolerante()
-                    rez2, _, _ = tester.ataca(tol_noi)
-                    if rez2 == "DEFECT":
-                        proiectant.confirma_esec(cota_mod)
-                        fara_defect = 0
-            progress_bar.progress(min(iteratii / 300, 1.0))
+                if st.session_state.lang == 'ro':
+                    status.markdown(f"""
+                    <div style="background: #d4edda; border-left: 4px solid #28a745; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                        <strong>Iteratia {iteratii}:</strong> Agentul Tester nu a gasit nicio vulnerabilitate.<br>
+                        <strong>Joc minim:</strong> {joc:.4f} mm &nbsp;|&nbsp;
+                        <strong>Actiune:</strong> Proiectantul incearca sa largeasca tolerantele pentru a reduce costul.
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    status.markdown(f"""
+                    <div style="background: #d4edda; border-left: 4px solid #28a745; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0;">
+                        <strong>Iteration {iteratii}:</strong> The Tester found no vulnerabilities.<br>
+                        <strong>Minimum gap:</strong> {joc:.4f} mm &nbsp;|&nbsp;
+                        <strong>Action:</strong> The Designer attempts to widen tolerances to reduce cost.
+                    </div>
+                    """, unsafe_allow_html=True)
         
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
