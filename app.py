@@ -477,7 +477,7 @@ with tab2:
             proc_defecte = int(100 * total_defecte / total_actiuni) if total_actiuni > 0 else 0
             proc_ok = 100 - proc_defecte
             
-            # Arena luptei
+                       # Arena luptei
             if st.session_state.lang == 'ro':
                 arena.markdown(f"""
                 <div style="border: 1px solid #ddd; border-radius: 12px; padding: 20px; background: #fafafa; margin: 10px 0;">
@@ -500,7 +500,7 @@ with tab2:
                             <div style="font-size: 2rem;">🔴</div>
                             <strong>Testerul</strong><br>
                             <small>Beta: {beta:.3f}</small>
-                    </div>
+                        </div>
                     </div>
                     <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
                         <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
