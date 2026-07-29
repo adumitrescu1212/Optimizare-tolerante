@@ -557,7 +557,7 @@ with tab2:
                         proiectant.confirma_esec(cota_mod)
                         fara_defect = 0
 
-                if st.session_state.lang == 'ro':
+        if st.session_state.lang == 'ro':
             st.caption("Interpretare: Bara reflecta istoricul complet al duelului. "
                       "Galben = iteratii cu DEFECT (Testerul a identificat configuratii critice). "
                       "Verde = iteratii OK (Testerul a validat tolerantele curente). "
