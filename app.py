@@ -557,16 +557,19 @@ with tab2:
                         proiectant.confirma_esec(cota_mod)
                         fara_defect = 0
 
-        if st.session_state.lang == 'ro':
-            st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte "
-                      "Testerul domina clar duelul, fortand Proiectantul sa stranga tolerantele "
-                      "pana cand ansamblul devine sigur. Fara presiunea Testerului, "
-                      "Proiectantul ar fi lasat tolerante largi si ansamblul ar fi produs rebuturi.")
+                if st.session_state.lang == 'ro':
+            st.caption("Interpretare: Bara reflecta istoricul complet al duelului. "
+                      "Galben = iteratii cu DEFECT (Testerul a identificat configuratii critice). "
+                      "Verde = iteratii OK (Testerul a validat tolerantele curente). "
+                      "Dominanta galbenului indica faptul ca Testerul a respins majoritatea "
+                      "propunerilor Proiectantului, fortand strangerea treptata a tolerantelor "
+                      "pana la frontiera de fezabilitate.")
         else:
-            st.caption("The bar shows the total duel history. Yellow = Tester found defects  "
-                      "The Tester clearly dominates, forcing the Designer to tighten tolerances "
-                      "until the assembly becomes safe. Without the Tester's pressure, "
-                      "the Designer would keep wide tolerances and the assembly would produce defects.")
+            st.caption("Interpretation: The bar reflects the complete duel history. "
+                      "Yellow = DEFECT iterations (Tester identified critical configurations). "
+                      "Green = OK iterations (Tester validated current tolerances). "
+                      "The yellow dominance indicates the Tester rejected most of the Designer's "
+                      "proposals, forcing gradual tightening of tolerances to the feasibility boundary.")
             
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
