@@ -509,8 +509,7 @@ with tab2:
                         <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
                             {f'OK {proc_ok}%' if proc_ok > 15 else ''}
                         </div>
-                    </div>
-                </div>
+                  
                 """, unsafe_allow_html=True)
             else:
                 arena.markdown(f"""
