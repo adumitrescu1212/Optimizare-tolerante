@@ -544,7 +544,7 @@ with tab2:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            time.sleep(0.8)
+            time.sleep(0.5)
             if fara_defect >= 2:
                 break
             
