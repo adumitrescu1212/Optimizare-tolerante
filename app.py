@@ -596,7 +596,7 @@ with tab2:
                 <strong>Ce face aceasta simulare?</strong> Sistemul a garantat deja (prin verificarea celor 64 de colturi) 
                 ca <strong>niciuna</strong> dintre combinatiile extreme nu produce interferenta. 
                 Dar in productia reala, majoritatea pieselor ies aproape de valorile nominale, nu la extreme. 
-                Monte Carlo simuleaza <strong>5000 de scenarii realiste</strong> (distributie normala) si estimeaza 
+                Monte Carlo simuleaza <strong>5000 de scenarii realiste</strong>  si estimeaza 
                 probabilitatea de defect in conditii reale de fabricatie. 
                 Un rezultat de 0% confirma ca tolerantele optime sunt sigure.
                 </p>
@@ -628,7 +628,7 @@ with tab2:
         c1.metric(t['mc_samples'], f"{n_mc:,}")
         c2.metric(t['mc_defects'], f"{defecte_mc}")
         c3.metric(t['mc_prob'], f"{100*defecte_mc/n_mc:.3f}%")
-        c4.metric(t['mc_dist'], "Normala (3σ)", help="Distributia normala (Gaussiana) centrata pe valoarea nominala, cu σ = toleranta/3. Conform regulii Six Sigma, 99.73% din piesele produse se afla in intervalul de toleranta.")
+        c4.metric(t['mc_dist'], "Normala", help="Distributia normala (Gaussiana) centrata pe valoarea nominala, cu σ = toleranta/3. Conform regulii Six Sigma, 99.73% din piesele produse se afla in intervalul de toleranta.")
         
         st.divider()
         st.header(t['comp_header'])
