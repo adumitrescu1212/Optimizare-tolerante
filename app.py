@@ -544,7 +544,21 @@ with tab2:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+                        
+            time.sleep(0.8)
             
+            if fara_defect >= 2:
+                break
+            
+            if rezultat == "OK":
+                cota_mod = proiectant.primeste_raport(False, None, beta)
+                if cota_mod is not False:
+                    tol_noi = proiectant.propune_tolerante()
+                    rez2, _, _ = tester.ataca(tol_noi)
+                    if rez2 == "DEFECT":
+                        proiectant.confirma_esec(cota_mod)
+                        fara_defect = 0
+        
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
         st.session_state['iteratii'] = iteratii
