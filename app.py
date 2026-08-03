@@ -393,7 +393,7 @@ with tab2:
         tolerante_init = np.full(6, tol_init)
                 # ---------- Combinatia critica INITIALA ----------
         st.divider()
-        st.header("🔍 " + ("Combinatia critica INAINTE de optimizare (tolerante initiale)" if st.session_state.lang == 'ro' else "Critical Combination BEFORE optimization (initial tolerances)"))
+        st.header("🔍 " + ("Combinatia critica INAINTE de optimizare" if st.session_state.lang == 'ro' else "Critical Combination BEFORE optimization"))
         
         tester_init = AgentTester(alpha=alpha, max_iteratii=500)
         rez_init, X_init, cota_init = tester_init.ataca(np.full(6, tol_init))
@@ -460,6 +460,12 @@ with tab2:
             m_cost.metric(t['cost_opt'], f"{cost:.2f}")
             m_beta.metric("Beta", f"{beta:.3f}")
             
+            if iteratii == 1:
+                if st.session_state.lang == 'ro':
+                    st.caption("Beta = factorul de agresivitate al neuronului fractionar. ~0.85 = alerta (strange tare). ~0.15 = relaxat (ajustari fine).")
+                else:
+                    st.caption("Beta = fractional neuron aggressiveness. ~0.85 = alert (tightens hard). ~0.15 = relaxed (fine adjustments).")
+            
             # Calcul proporție pentru bară
             if rezultat == "DEFECT":
                 total_defecte += 1
@@ -477,7 +483,7 @@ with tab2:
             proc_defecte = int(100 * total_defecte / total_actiuni) if total_actiuni > 0 else 0
             proc_ok = 100 - proc_defecte
             
-                                  # Arena luptei - Doi Roboti
+            # Arena luptei - Doi Roboti
             if st.session_state.lang == 'ro':
                 arena.markdown(f"""
                 <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
@@ -544,10 +550,18 @@ with tab2:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-                        
+            
             time.sleep(0.8)
             
             if fara_defect >= 2:
+                if st.session_state.lang == 'ro':
+                    st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte. "
+                              "Testerul domina, fortand Proiectantul sa stranga tolerantele "
+                              "pana cand ansamblul devine sigur.")
+                else:
+                    st.caption("The bar shows the total duel history. Yellow = Tester found defects. "
+                              "The Tester dominates, forcing the Designer to tighten tolerances "
+                              "until the assembly becomes safe.")
                 break
             
             if rezultat == "OK":
@@ -585,6 +599,34 @@ with tab2:
         
         st.divider()
         st.header(t['mc_header'])
+        
+        if st.session_state.lang == 'ro':
+            st.markdown("""
+            <div style="background: rgba(128,128,128,0.06); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                <strong>Ce face aceasta simulare?</strong> Sistemul a garantat deja (prin verificarea celor 64 de colturi) 
+                ca <strong>niciuna</strong> dintre combinatiile extreme nu produce interferenta. 
+                Dar in productia reala, majoritatea pieselor ies aproape de valorile nominale, nu la extreme. 
+                Monte Carlo simuleaza <strong>5000 de scenarii realiste</strong> (distributie normala) si estimeaza 
+                probabilitatea de defect in conditii reale de fabricatie. 
+                Un rezultat de 0% confirma ca tolerantele optime sunt sigure.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div style="background: rgba(128,128,128,0.06); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                <strong>What does this simulation do?</strong> The system has already guaranteed (by checking all 64 corners) 
+                that <strong>none</strong> of the extreme combinations causes interference. 
+                But in real production, most parts come out near nominal values, not at extremes. 
+                Monte Carlo simulates <strong>5000 realistic scenarios</strong> (normal distribution) and estimates 
+                the defect probability under real manufacturing conditions. 
+                A 0% result confirms the optimal tolerances are safe.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        
         tol_opt = proiectant.propune_tolerante()
         n_mc, defecte_mc = 5000, 0
         for _ in range(n_mc):
@@ -608,10 +650,10 @@ with tab2:
             ('Garanție' if st.session_state.lang == 'ro' else 'Guarantee'): ['Absolută', 'Absolută', 'Statistică'],
         })
         st.dataframe(df_comp, use_container_width=True, hide_index=True)
-
+        
          # ---------- Combinația critică ----------
         st.divider()
-        st.header("🔍 " + ("Combinația critică (cel mai rău caz)" if st.session_state.lang == 'ro' else "Critical Combination (Worst Case)"))
+        st.header("🔍 " + ("Combinația critică" if st.session_state.lang == 'ro' else "Critical Combination"))
         
         tester2 = AgentTester(alpha=alpha, max_iteratii=500)
         rezultat_crit, X_crit, cota_crit = tester2.ataca(proiectant.propune_tolerante())
@@ -628,21 +670,23 @@ with tab2:
         })
         st.dataframe(df_critic, use_container_width=True, hide_index=True)
         
-        cota_afisata = cota_crit + 1 if cota_crit is not None else "-"
-        
         if st.session_state.lang == 'ro':
             st.markdown(
                 "> **Interpretare:** Tabelul arata combinatia exacta de dimensiuni care produce cel mai mic joc "
                 f"(joc = **{joc_crit:.4f} mm**). Aceste valori trebuie introduse in SolidWorks pentru validarea "
-                "experimentala. Coloana *Directie* indica daca dimensiunea trebuie setata la maximul sau minimul "
-                f"tolerantei. Cota **{cota_afisata}** este cea mai solicitata in aceasta configuratie."
+                "experimentala. Coloana <strong>Directie</strong> indica daca dimensiunea trebuie setata la "
+                "<strong>Maxim</strong> (valoare mai mare decat nominalul, ex: stift mai gros) sau "
+                "<strong>Minim</strong> (valoare mai mica decat nominalul, ex: gaura mai stramta) "
+                "pentru a produce defectul."
             )
         else:
             st.markdown(
                 "> **Interpretation:** The table shows the exact dimension combination producing the smallest gap "
                 f"(gap = **{joc_crit:.4f} mm**). These values should be entered in SolidWorks for experimental "
-                "validation. The *Direction* column indicates whether the dimension is at maximum or minimum "
-                f"tolerance. Dimension **{cota_afisata}** is the most stressed in this configuration."
+                "validation. The <strong>Direction</strong> column indicates whether the dimension should be set to "
+                "<strong>Maximum</strong> (value larger than nominal, e.g. thicker pin) or "
+                "<strong>Minimum</strong> (value smaller than nominal, e.g. tighter hole) "
+                "to cause the defect."
             )
         csv = pd.DataFrame(istoric).to_csv(index=False).encode('utf-8')
         st.download_button(t['export'], csv, 'istoric_optimizare.csv', 'text/csv')
