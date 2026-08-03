@@ -456,15 +456,12 @@ with tab2:
                 'Cotă vinovată': cota + 1 if cota is not None else '-'
             })
             
-            m_iter.metric(t['iterations'], f"{iteratii}")
-            m_cost.metric(t['cost_opt'], f"{cost:.2f}")
-            m_beta.metric("Beta", f"{beta:.3f}")
-            
-            if iteratii == 1:
-                if st.session_state.lang == 'ro':
-                    st.caption("Beta = factorul de agresivitate al neuronului fractionar. ~0.85 = alerta (strange tare). ~0.15 = relaxat (ajustari fine).")
-                else:
-                    st.caption("Beta = fractional neuron aggressiveness. ~0.85 = alert (tightens hard). ~0.15 = relaxed (fine adjustments).")
+            m_iter.metric(t['iterations'], f"{iteratii}", 
+                         help="Numarul curent de iteratii. Sistemul se opreste dupa 2 iteratii consecutive fara defecte (convergenta).")
+            m_cost.metric(t['cost_opt'], f"{cost:.2f}", 
+                         help="Costul total al tolerantelor. Formula: Cost = suma(1/toleranta). Mai mic = fabricatie mai ieftina.")
+            m_beta.metric("Beta", f"{beta:.3f}", 
+                         help="Factorul de agresivitate al neuronului fractionar. ~0.85 = sistem alert (strange agresiv). ~0.15 = sistem relaxat (ajustari fine). Memoria lunga oferita de calculul fractionar controleaza acest factor.")
             
             # Calcul proporție pentru bară
             if rezultat == "DEFECT":
@@ -554,14 +551,6 @@ with tab2:
             time.sleep(0.8)
             
             if fara_defect >= 2:
-                if st.session_state.lang == 'ro':
-                    st.caption("Bara arata istoricul total al duelului. Galben = Testerul a gasit defecte. "
-                              "Testerul domina, fortand Proiectantul sa stranga tolerantele "
-                              "pana cand ansamblul devine sigur.")
-                else:
-                    st.caption("The bar shows the total duel history. Yellow = Tester found defects. "
-                              "The Tester dominates, forcing the Designer to tighten tolerances "
-                              "until the assembly becomes safe.")
                 break
             
             if rezultat == "OK":
@@ -639,7 +628,7 @@ with tab2:
         c1.metric(t['mc_samples'], f"{n_mc:,}")
         c2.metric(t['mc_defects'], f"{defecte_mc}")
         c3.metric(t['mc_prob'], f"{100*defecte_mc/n_mc:.3f}%")
-        c4.metric(t['mc_dist'], "Normală (3σ)")
+        c4.metric(t['mc_dist'], "Normala (3σ)", help="Distributia normala (Gaussiana) centrata pe valoarea nominala, cu σ = toleranta/3. Conform regulii Six Sigma, 99.73% din piesele produse se afla in intervalul de toleranta.")
         
         st.divider()
         st.header(t['comp_header'])
@@ -671,23 +660,29 @@ with tab2:
         st.dataframe(df_critic, use_container_width=True, hide_index=True)
         
         if st.session_state.lang == 'ro':
-            st.markdown(
-                "> **Interpretare:** Tabelul arata combinatia exacta de dimensiuni care produce cel mai mic joc "
-                f"(joc = **{joc_crit:.4f} mm**). Aceste valori trebuie introduse in SolidWorks pentru validarea "
-                "experimentala. Coloana <strong>Directie</strong> indica daca dimensiunea trebuie setata la "
-                "<strong>Maxim</strong> (valoare mai mare decat nominalul, ex: stift mai gros) sau "
-                "<strong>Minim</strong> (valoare mai mica decat nominalul, ex: gaura mai stramta) "
-                "pentru a produce defectul."
-            )
+            st.markdown(f"""
+            <div style="background: rgba(128,128,128,0.06); border-radius: 8px; padding: 15px; margin-top: 10px;">
+                <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                <strong>Interpretare:</strong> Jocul minim teoretic este <strong>{joc_crit:.4f} mm</strong>. 
+                Valorile negative indica interferenta (defect). Coloana <strong>Directie</strong> specifica 
+                daca dimensiunea trebuie sa fie la <strong>Maxim</strong> (peste valoarea nominala) 
+                sau la <strong>Minim</strong> (sub valoarea nominala) pentru a provoca aceasta interferenta.
+                Aceste valori se introduc in SolidWorks pentru validarea experimentala.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.markdown(
-                "> **Interpretation:** The table shows the exact dimension combination producing the smallest gap "
-                f"(gap = **{joc_crit:.4f} mm**). These values should be entered in SolidWorks for experimental "
-                "validation. The <strong>Direction</strong> column indicates whether the dimension should be set to "
-                "<strong>Maximum</strong> (value larger than nominal, e.g. thicker pin) or "
-                "<strong>Minimum</strong> (value smaller than nominal, e.g. tighter hole) "
-                "to cause the defect."
-            )
+            st.markdown(f"""
+            <div style="background: rgba(128,128,128,0.06); border-radius: 8px; padding: 15px; margin-top: 10px;">
+                <p style="margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                <strong>Interpretation:</strong> The theoretical minimum gap is <strong>{joc_crit:.4f} mm</strong>. 
+                Negative values indicate interference (defect). The <strong>Direction</strong> column specifies 
+                whether the dimension should be at <strong>Maximum</strong> (above nominal) 
+                or <strong>Minimum</strong> (below nominal) to cause this interference.
+                These values are entered in SolidWorks for experimental validation.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         csv = pd.DataFrame(istoric).to_csv(index=False).encode('utf-8')
         st.download_button(t['export'], csv, 'istoric_optimizare.csv', 'text/csv')
         st.success("👈 " + ("Mergi la tab-ul Grafice." if st.session_state.lang == 'ro' else "Go to Charts tab."))
