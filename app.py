@@ -481,7 +481,7 @@ with tab2:
             if st.session_state.lang == 'ro':
                 arena.markdown(f"""
                 <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
-                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Arena Luptei — Iteratia {iteratii}</h4>
+                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Confruntarea Agentilor — Iteratia {iteratii}</h4>
                     <div style="display: flex; justify-content: space-around; align-items: center;">
                         <div style="text-align: center;">
                             <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
@@ -514,7 +514,7 @@ with tab2:
             else:
                 arena.markdown(f"""
                 <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
-                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Battle Arena — Iteration {iteratii}</h4>
+                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Agent Confrontation — Iteration {iteratii}</h4>
                     <div style="display: flex; justify-content: space-around; align-items: center;">
                         <div style="text-align: center;">
                             <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
