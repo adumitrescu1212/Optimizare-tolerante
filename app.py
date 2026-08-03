@@ -477,99 +477,73 @@ with tab2:
             proc_defecte = int(100 * total_defecte / total_actiuni) if total_actiuni > 0 else 0
             proc_ok = 100 - proc_defecte
             
-                       # Arena luptei
+                                  # Arena luptei - Doi Roboti
             if st.session_state.lang == 'ro':
                 arena.markdown(f"""
-                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 20px; background: #fafafa; margin: 10px 0;">
-                    <h4 style="text-align: center; margin-top: 0;">Arena Luptei</h4>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 2rem;">🔵</div>
-                            <strong>Proiectantul</strong><br>
-                            <small>Cost: {cost:.2f}</small>
-                        </div>
-                        <div style="text-align: center; flex: 2;">
-                            <div style="font-size: 1.5rem; color: {culoare}; font-weight: bold;">
-                                Iteratia {iteratii}: {rezultat}
+                <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
+                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Arena Luptei — Iteratia {iteratii}</h4>
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
+                                        transition: all 0.3s ease;
+                                        filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
+                                        opacity: {1 if rezultat == 'DEFECT' else 0.6};">
+                                🔴
                             </div>
-                            <div style="font-size: 0.85rem; color: #555;">
-                                Joc = {joc:.4f} mm | {actiune}
+                            <strong style="color: #e74c3c;">Testerul</strong><br>
+                            <small style="color: #888;">Beta: {beta:.3f}</small><br>
+                            <small style="color: #888;">Joc: {joc:.4f} mm</small>
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
+                            VS
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: {80 if rezultat == 'OK' else 60}px; 
+                                        transition: all 0.3s ease;
+                                        filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
+                                        opacity: {1 if rezultat == 'OK' else 0.6};">
+                                🔵
                             </div>
-                        </div>
-                        <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 2rem;">🔴</div>
-                            <strong>Testerul</strong><br>
-                            <small>Beta: {beta:.3f}</small>
-                        </div>
-                    </div>
-                    <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
-                        <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
-                            {f'DEFECT {proc_defecte}%' if proc_defecte > 15 else ''}
-                        </div>
-                        <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
-                            {f'OK {proc_ok}%' if proc_ok > 15 else ''}
-                  
-                """, unsafe_allow_html=True)
-            else:
-                arena.markdown(f"""
-                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 20px; background: #fafafa; margin: 10px 0;">
-                    <h4 style="text-align: center; margin-top: 0;">Battle Arena</h4>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 2rem;">🔵</div>
-                            <strong>Designer</strong><br>
-                            <small>Cost: {cost:.2f}</small>
-                        </div>
-                        <div style="text-align: center; flex: 2;">
-                            <div style="font-size: 1.5rem; color: {culoare}; font-weight: bold;">
-                                Iteration {iteratii}: {rezultat}
-                            </div>
-                            <div style="font-size: 0.85rem; color: #555;">
-                                Gap = {joc:.4f} mm | {actiune}
-                            </div>
-                        </div>
-                        <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 2rem;">🔴</div>
-                            <strong>Tester</strong><br>
-                            <small>Beta: {beta:.3f}</small>
-                        </div>
-                    </div>
-                    <div style="background: #e0e0e0; border-radius: 10px; height: 24px; display: flex; overflow: hidden;">
-                        <div style="background: #ffc107; width: {proc_defecte}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
-                            {f'DEFECT {proc_defecte}%' if proc_defecte > 15 else ''}
-                        </div>
-                        <div style="background: #28a745; width: {proc_ok}%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: bold;">
-                            {f'OK {proc_ok}%' if proc_ok > 15 else ''}
+                            <strong style="color: #667eea;">Proiectantul</strong><br>
+                            <small style="color: #888;">Cost: {cost:.2f}</small><br>
+                            <small style="color: #888;">{actiune}</small>
                         </div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            time.sleep(0.5)
-            if fara_defect >= 2:
-                break
-            
-            if rezultat == "OK":
-                cota_mod = proiectant.primeste_raport(False, None, beta)
-                if cota_mod is not False:
-                    tol_noi = proiectant.propune_tolerante()
-                    rez2, _, _ = tester.ataca(tol_noi)
-                    if rez2 == "DEFECT":
-                        proiectant.confirma_esec(cota_mod)
-                        fara_defect = 0
-
-        if st.session_state.lang == 'ro':
-            st.caption("Interpretare: Bara reflecta istoricul complet al duelului. "
-                      "Galben = iteratii cu DEFECT (Testerul a identificat configuratii critice). "
-                      "Verde = iteratii OK (Testerul a validat tolerantele curente). "
-                      "Dominanta galbenului indica faptul ca Testerul a respins majoritatea "
-                      "propunerilor Proiectantului, fortand strangerea treptata a tolerantelor "
-                      "pana la frontiera de fezabilitate.")
-        else:
-            st.caption("Interpretation: The bar reflects the complete duel history. "
-                      "Yellow = DEFECT iterations (Tester identified critical configurations). "
-                      "Green = OK iterations (Tester validated current tolerances). "
-                      "The yellow dominance indicates the Tester rejected most of the Designer's "
-                      "proposals, forcing gradual tightening of tolerances to the feasibility boundary.")
+            else:
+                arena.markdown(f"""
+                <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
+                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Battle Arena — Iteration {iteratii}</h4>
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
+                                        transition: all 0.3s ease;
+                                        filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
+                                        opacity: {1 if rezultat == 'DEFECT' else 0.6};">
+                                🔴
+                            </div>
+                            <strong style="color: #e74c3c;">Tester</strong><br>
+                            <small style="color: #888;">Beta: {beta:.3f}</small><br>
+                            <small style="color: #888;">Gap: {joc:.4f} mm</small>
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
+                            VS
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: {80 if rezultat == 'OK' else 60}px; 
+                                        transition: all 0.3s ease;
+                                        filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
+                                        opacity: {1 if rezultat == 'OK' else 0.6};">
+                                🔵
+                            </div>
+                            <strong style="color: #667eea;">Designer</strong><br>
+                            <small style="color: #888;">Cost: {cost:.2f}</small><br>
+                            <small style="color: #888;">{actiune}</small>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
             
         st.session_state['istoric'] = istoric
         st.session_state['proiectant'] = proiectant
