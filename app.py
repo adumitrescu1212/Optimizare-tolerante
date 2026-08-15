@@ -696,6 +696,7 @@ with tab3:
     else:
         df = pd.DataFrame(st.session_state['istoric'])
         
+        # Ghid de citire
         if st.session_state.lang == 'ro':
             st.markdown("""
             <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
@@ -703,9 +704,9 @@ with tab3:
                 <strong>📋 Cum citesti aceste date?</strong><br>
                 Tabelul de mai jos contine <strong>istoricul complet al optimizarii</strong>. Fiecare rand reprezinta o iteratie.
                 Coloana <strong>Rezultat</strong> arata daca Testerul a gasit un defect (DEFECT) sau nu (OK).
-                Coloana <strong>Beta</strong> arata starea neuronului fractionar (~0.85 = agresiv, ~0.15 = relaxat).
-                Coloana <strong>Cost</strong> este costul tolerantelor la acel moment (mai mic = mai ieftin).
-                Coloana <strong>Joc</strong> este distanta minima dintre stift si gaura (negativ = interferenta, pozitiv = OK).
+                Coloana <strong>Beta</strong> arata starea neuronului fractionar.
+                Coloana <strong>Cost</strong> este costul tolerantelor.
+                Coloana <strong>Joc</strong> este distanta minima dintre stift si gaura.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -714,11 +715,11 @@ with tab3:
             <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
                 <p style="font-size: 1rem; line-height: 1.7; margin: 0;">
                 <strong>📋 How to read this data?</strong><br>
-                The table below contains the <strong>complete optimization history</strong>. Each row is one iteration.
-                <strong>Result</strong> shows whether the Tester found a defect (DEFECT) or not (OK).
-                <strong>Beta</strong> shows the fractional neuron state (~0.85 = aggressive, ~0.15 = relaxed).
-                <strong>Cost</strong> is the tolerance cost at that moment (lower = cheaper).
-                <strong>Gap</strong> is the minimum distance between pin and hole (negative = interference, positive = OK).
+                The table below contains the <strong>complete optimization history</strong>.
+                <strong>Result</strong> shows DEFECT or OK.
+                <strong>Beta</strong> shows the fractional neuron state.
+                <strong>Cost</strong> is the tolerance cost.
+                <strong>Gap</strong> is the minimum distance between pin and hole.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -732,14 +733,46 @@ with tab3:
         tg1, tg2, tg3 = st.tabs([t['chart_cost'], t['chart_beta'], t['chart_joc']])
         
         with tg1:
-            st.line_chart(df, x='Iterație', y='Cost', height=400)
+            # Cost cu culoare personalizata
+            st.markdown("""
+            <style>
+                .stPlotlyChart { border-radius: 12px; }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            import plotly.graph_objects as go
+            
+            fig_cost = go.Figure()
+            fig_cost.add_trace(go.Scatter(
+                x=df['Iterație'], 
+                y=df['Cost'],
+                mode='lines',
+                name='Cost',
+                line=dict(color='#667eea', width=2.5),
+                fill='tozeroy',
+                fillcolor='rgba(102,126,234,0.1)'
+            ))
+            fig_cost.update_layout(
+                height=400,
+                margin=dict(l=10, r=10, t=10, b=10),
+                xaxis_title="Iterație",
+                yaxis_title="Cost",
+                template="plotly_white"
+            )
+            st.plotly_chart(fig_cost, use_container_width=True)
+            
+            # Statistici
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Minim", f"{df['Cost'].min():.2f}")
+            c2.metric("Maxim", f"{df['Cost'].max():.2f}")
+            c3.metric("Final", f"{df['Cost'].iloc[-1]:.2f}")
+            
             if st.session_state.lang == 'ro':
                 st.markdown("""
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
                     <strong>🔵 Cum interpretam:</strong> Costul porneste de la o valoare mica (tolerante largi = ieftin) 
-                    si <strong>creste pe masura ce sistemul strange tolerantele</strong> pentru a elimina defectele. 
-                    In faza finala, costul se stabilizeaza sau scade usor cand sistemul gaseste optimul.
+                    si <strong>creste pe masura ce sistemul strange tolerantele</strong> pentru a elimina defectele.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -747,23 +780,43 @@ with tab3:
                 st.markdown("""
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                    <strong>🔵 How to interpret:</strong> Cost starts low (wide tolerances = cheap) and 
+                    <strong>🔵 How to interpret:</strong> Cost starts low and 
                     <strong>increases as the system tightens tolerances</strong> to eliminate defects.
-                    In the final phase, cost stabilizes or slightly decreases when the optimum is found.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
         
         with tg2:
-            st.line_chart(df, x='Iterație', y='Beta', height=400)
+            fig_beta = go.Figure()
+            fig_beta.add_trace(go.Scatter(
+                x=df['Iterație'], 
+                y=df['Beta'],
+                mode='lines',
+                name='Beta',
+                line=dict(color='#e74c3c', width=2.5),
+                fill='tozeroy',
+                fillcolor='rgba(231,76,60,0.08)'
+            ))
+            fig_beta.update_layout(
+                height=400,
+                margin=dict(l=10, r=10, t=10, b=10),
+                xaxis_title="Iterație",
+                yaxis_title="Beta",
+                template="plotly_white"
+            )
+            st.plotly_chart(fig_beta, use_container_width=True)
+            
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Minim", f"{df['Beta'].min():.3f}")
+            c2.metric("Maxim", f"{df['Beta'].max():.3f}")
+            c3.metric("Final", f"{df['Beta'].iloc[-1]:.3f}")
+            
             if st.session_state.lang == 'ro':
                 st.markdown("""
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
                     <strong>🔴 Cum interpretam:</strong> Beta reflecta <strong>starea neuronului fractionar</strong>.
-                    Ramane ridicat (~0.85) in faza de defecte — sistemul este in alerta.
-                    <strong>Scade brusc</strong> cand Testerul nu mai gaseste defecte — sistemul se relaxeaza.
-                    In faza finala, Beta e mic (~0.15) — ajustari fine si precaute.
+                    Ramane ridicat (~0.85) in faza de defecte, apoi <strong>scade brusc</strong> cand sistemul se relaxeaza.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -772,23 +825,46 @@ with tab3:
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
                     <strong>🔴 How to interpret:</strong> Beta reflects the <strong>fractional neuron state</strong>.
-                    Stays high (~0.85) during the defect phase — system is alert.
-                    <strong>Drops sharply</strong> when the Tester stops finding defects — system relaxes.
-                    In the final phase, Beta is small (~0.15) — fine and cautious adjustments.
+                    Stays high (~0.85) during defects, then <strong>drops sharply</strong> when the system relaxes.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
         
         with tg3:
-            st.line_chart(df, x='Iterație', y='Joc (mm)', height=400)
+            fig_joc = go.Figure()
+            fig_joc.add_trace(go.Scatter(
+                x=df['Iterație'], 
+                y=df['Joc (mm)'],
+                mode='lines',
+                name='Joc',
+                line=dict(color='#28a745', width=2.5),
+                fill='tozeroy',
+                fillcolor='rgba(40,167,69,0.08)'
+            ))
+            # Linie de referinta la 0
+            fig_joc.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Frontiera")
+            fig_joc.add_hline(y=-0.01, line_dash="dot", line_color="red", opacity=0.3, annotation_text="-0.01 mm")
+            fig_joc.update_layout(
+                height=400,
+                margin=dict(l=10, r=10, t=10, b=10),
+                xaxis_title="Iterație",
+                yaxis_title="Joc (mm)",
+                template="plotly_white"
+            )
+            st.plotly_chart(fig_joc, use_container_width=True)
+            
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Minim", f"{df['Joc (mm)'].min():.4f} mm")
+            c2.metric("Maxim", f"{df['Joc (mm)'].max():.4f} mm")
+            c3.metric("Final", f"{df['Joc (mm)'].iloc[-1]:.4f} mm")
+            
             if st.session_state.lang == 'ro':
                 st.markdown("""
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                    <strong>🟢 Cum interpretam:</strong> Jocul minim porneste <strong>puternic negativ</strong> (interferenta majora).
-                    Pe masura ce tolerantele sunt stranse, jocul <strong>creste spre zero</strong>.
-                    Cand jocul devine pozitiv, ansamblul functioneaza corect.
-                    Sistemul gaseste exact <strong>frontiera de fezabilitate</strong> — punctul optim.
+                    <strong>🟢 Cum interpretam:</strong> Jocul porneste <strong>puternic negativ</strong> (interferenta majora)
+                    si creste spre zero. Linia intrerupta rosie e pragul de -0.01 mm.
+                    Cand jocul trece de linia gri (0), ansamblul functioneaza corect.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -796,14 +872,12 @@ with tab3:
                 st.markdown("""
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                    <strong>🟢 How to interpret:</strong> The minimum gap starts <strong>strongly negative</strong> (major interference).
-                    As tolerances are tightened, the gap <strong>rises toward zero</strong>.
-                    When the gap becomes positive, the assembly works correctly.
-                    The system finds exactly the <strong>feasibility boundary</strong> — the optimal point.
+                    <strong>🟢 How to interpret:</strong> The gap starts <strong>strongly negative</strong>
+                    and rises toward zero. The red dotted line is the -0.01 mm threshold.
+                    When the gap crosses the gray line (0), the assembly works correctly.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
-
 # ================================================================
 # TAB 4: DESPRE
 # ================================================================
