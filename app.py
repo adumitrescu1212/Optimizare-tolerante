@@ -683,7 +683,7 @@ with tab2:
             """, unsafe_allow_html=True)
         csv = pd.DataFrame(istoric).to_csv(index=False).encode('utf-8')
         st.download_button(t['export'], csv, 'istoric_optimizare.csv', 'text/csv')
-            if st.button("📄 Exporta PDF"):
+        if st.button("📄 Exporta PDF"):
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=12)
