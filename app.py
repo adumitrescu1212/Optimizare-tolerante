@@ -1402,21 +1402,9 @@ with tab6:
     st.title("💬 Asistent AI")
     
     if st.session_state.lang == 'ro':
-        st.markdown("""
-        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
-            Pune orice intrebare despre acest proiect — tolerante, agenti, neuron fractionar, rezultate, validare CAD.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("Pune orice intrebare despre acest proiect.")
     else:
-        st.markdown("""
-        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
-            Ask anything about this project — tolerances, agents, fractional neuron, results, CAD validation.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("Ask anything about this project.")
     
     intrebare = st.text_input(
         "Intrebarea ta:" if st.session_state.lang == 'ro' else "Your question:",
@@ -1425,30 +1413,28 @@ with tab6:
     
     if intrebare:
         with st.spinner("Se genereaza raspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
-            context = """
-            Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
+            import json
+            from google.oauth2 import service_account
+            from google.auth.transport.requests import Request
             
-            DESPRE PROIECT:
-            - Sistem multi-agent cu neuron fractionar pentru optimizarea tolerantelor
-            - Ansamblu mecanic: baza cu 2 stifturi, capac cu 2 gauri, 6 cote tolerante
-            - Doi agenti: Proiectantul (tolerante largi = cost mic) si Testerul (verifica 64 colturi)
-            - Teorema de localizare a minimului: minimul se atinge la unul din cele 64 de colturi
-            - Garantie matematica absoluta: niciun defect nu scapa nedetectat
-            - Neuron fractionar (Grunwald-Letnikov, alpha=0.7) controleaza Beta
-            - Beta ~0.85 = alerta, Beta ~0.15 = relaxat
-            - Cost = suma(1/t_i), convergenta dupa 2 OK consecutive
-            - Rezultate: ~110 iteratii, cost ~211, probabilitate defect 0% (Monte Carlo 5000)
-            - Validat in SolidWorks cu Interference Detection
-            - Algoritmi: EVEA-DD, GTBA-DD, AFBN-DD, ADLC-DD
+            service_account_info = json.loads(st.secrets["GEMINI_SERVICE_ACCOUNT"])
+            credentials = service_account.Credentials.from_service_account_info(
+                service_account_info,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"]
+            )
+            credentials.refresh(Request())
+            token = credentials.token
             
-            Raspunde scurt, clar, in limba intrebarii.
-            """
+            context = """Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor.
+            Sistem multi-agent cu neuron fractionar. Doi agenti: Proiectantul si Testerul.
+            64 de colturi verificate. Garantie absoluta. Validat in SolidWorks.
+            Raspunde scurt, in limba intrebarii."""
             
-            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash:generateContent"
+            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
             
             headers = {
                 "Content-Type": "application/json",
-                "x-goog-api-key": st.secrets["GEMINI_API_KEY"]
+                "Authorization": f"Bearer {token}"
             }
             
             payload = {
@@ -1462,28 +1448,4 @@ with tab6:
                 st.markdown(raspuns)
             else:
                 st.error(f"Eroare API: {raspuns_api.status_code}")
-                st.write(f"Detalii: {raspuns_api.text[:200]}")
-    
-    st.divider()
-    
-    if st.session_state.lang == 'ro':
-        st.markdown("**Sugestii de intrebari:**")
-        sugestii = [
-            "Ce este Beta si ce valori poate lua?",
-            "De ce verificam doar 64 de combinatii?",
-            "Ce face fiecare agent?",
-            "Ce este simularea Monte Carlo?"
-        ]
-    else:
-        st.markdown("**Suggested questions:**")
-        sugestii = [
-            "What is Beta and what values can it take?",
-            "Why do we check only 64 combinations?",
-            "What does each agent do?",
-            "What is the Monte Carlo simulation?"
-        ]
-    
-    for s in sugestii:
-        if st.button(s, key=f"sug_{s[:15]}"):
-            st.session_state['intrebare'] = s
-            st.rerun()
+                st.write(f"Detalii: {raspuns_api.text[:300]}")
