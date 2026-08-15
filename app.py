@@ -1444,7 +1444,7 @@ with tab6:
             Raspunde scurt, clar, in limba intrebarii.
             """
             
-            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash:generateContent"
             
             headers = {
                 "Content-Type": "application/json",
