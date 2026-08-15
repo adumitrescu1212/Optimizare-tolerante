@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import requests
 import time
+import json
+import os
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
@@ -1396,47 +1398,236 @@ with tab5:
         """, unsafe_allow_html=True)
 
 # ================================================================
-# TAB 6: ASISTENT AI
+# TAB 6: ASISTENT AI (VERSIONEA ÎMBUNĂTĂȚITĂ)
 # ================================================================
 with tab6:
-    st.title("💬 Asistent AI")
+    st.title("💬 " + ("Asistent AI" if st.session_state.lang == 'ro' else "AI Assistant"))
     
+    # Descriere
     if st.session_state.lang == 'ro':
-        st.markdown("Pune orice intrebare despre acest proiect.")
+        st.markdown("""
+        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
+            🤖 Asistentul AI poate răspunde la întrebări despre:
+            • Optimizarea tolerantelor și arhitectura multi-agent
+            • Neuronul fracționar și derivata Grunwald-Letnikov
+            • Teorema colțurilor și demonstrația matematică
+            • Interpretarea rezultatelor și graficele
+            • Comparația cu metodele clasice
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.markdown("Ask anything about this project.")
+        st.markdown("""
+        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
+            🤖 The AI assistant can answer questions about:
+            • Tolerance optimization and multi-agent architecture
+            • Fractional neuron and Grunwald-Letnikov derivative
+            • Corner theorem and mathematical proof
+            • Interpreting results and charts
+            • Comparison with classical methods
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    intrebare = st.text_input(
-        "Intrebarea ta:" if st.session_state.lang == 'ro' else "Your question:",
-        placeholder="Ex: Ce este Beta?" if st.session_state.lang == 'ro' else "E.g.: What is Beta?"
-    )
+    # Layout cu 2 coloane
+    col_question, col_history = st.columns([2, 1])
     
-    if intrebare:
-        with st.spinner("Se genereaza raspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
-            context = """
-            Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor.
-            Sistem multi-agent cu neuron fractionar.
-            Doi agenti: Proiectantul si Testerul.
-            64 de colturi verificate exhaustiv. Garantie matematica absoluta.
-            Raspunde scurt, clar, in limba intrebarii.
+    with col_question:
+        # Input întrebare
+        intrebare = st.text_area(
+            "Întrebarea ta:" if st.session_state.lang == 'ro' else "Your question:",
+            placeholder=t['ai_placeholder'],
+            height=100,
+            key="ai_question_input"
+        )
+        
+        col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
+        with col_btn1:
+            ask_button = st.button(
+                t['ai_ask'],
+                type="primary",
+                use_container_width=True,
+                key="ai_ask_btn"
+            )
+        with col_btn2:
+            if st.button(
+                t['ai_clear'],
+                use_container_width=True,
+                key="ai_clear_btn"
+            ):
+                st.session_state.chat_history = []
+                st.rerun()
+        with col_btn3:
+            # Indicator stare API
+            api_key = st.secrets.get("GEMINI_API_KEY", "")
+            if api_key and GEMINI_AVAILABLE:
+                st.success("✅ API conectat" if st.session_state.lang == 'ro' else "✅ API connected")
+            else:
+                st.warning("⚠️ API offline" if st.session_state.lang == 'ro' else "⚠️ API offline")
+    
+    with col_history:
+        st.markdown(f"### {t['ai_stats']}")
+        total_q = len([m for m in st.session_state.chat_history if m['role'] == 'user'])
+        total_a = len([m for m in st.session_state.chat_history if m['role'] == 'assistant'])
+        st.metric(t['ai_questions'], total_q)
+        st.metric("Răspunsuri" if st.session_state.lang == 'ro' else "Answers", total_a)
+    
+    # Afișare istoric
+    if st.session_state.chat_history:
+        st.divider()
+        st.markdown(f"### {t['ai_conversation']}")
+        
+        # Container scrollabil pentru istoric
+        chat_container = st.container()
+        with chat_container:
+            for msg in st.session_state.chat_history:
+                if msg['role'] == 'user':
+                    st.chat_message("user").write(msg['content'])
+                else:
+                    st.chat_message("assistant").write(msg['content'])
+    
+    # Procesare întrebare
+    if ask_button and intrebare:
+        with st.spinner("Se generează răspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
+            # Adăugăm întrebarea în istoric
+            st.session_state.chat_history.append({'role': 'user', 'content': intrebare})
+            
+            # Construim contextul
+            context_ro = f"""
+            Ești un asistent AI specializat pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
+            
+            DESPRE PROIECT:
+            • Sistem multi-agent cu doi agenți: Proiectantul (propune toleranțe) și Testerul (verifică)
+            • Neuron fracționar bazat pe derivata Grunwald-Letnikov pentru control adaptiv
+            • Teorema colțurilor: minimul funcției de joc se află la unul din 64 de colțuri
+            • Garantie matematică absolută a asamblării
+            • Optimizare pentru un ansamblu stift-gaură cu 6 cote dimensionale
+            
+            PARAMETRI:
+            • Alpha (0.1-1.0): parametru de memorie fracționară
+            • Beta (0-1): stare neuron - ~0.85 = agresiv, ~0.15 = relaxat
+            • Delta: pas de ajustare (0.01-0.50)
+            • Cost = sumă(1/toleranță)
+            • Joc = R_gaura - R_stift - distanța_centre
+            
+            CUM RĂSPUNZI:
+            • Răspunde clar, concis și precis
+            • Folosește termeni tehnici corecți
+            • Oferă explicații intuitive
+            • Dacă nu știi ceva, spune sincer
+            • Folosește limba română
             """
             
-            url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+            context_en = f"""
+            You are an AI assistant specialized in a research project about dimensional tolerance optimization.
             
-            headers = {
-                "Content-Type": "application/json",
-                "x-goog-api-key": st.secrets["GEMINI_API_KEY"]
-            }
+            ABOUT THE PROJECT:
+            • Multi-agent system with two agents: Designer (proposes tolerances) and Tester (verifies)
+            • Fractional neuron based on Grunwald-Letnikov derivative for adaptive control
+            • Corner theorem: the minimum of the gap function is at one of 64 corners
+            • Absolute mathematical guarantee of assembly
+            • Optimization for a pin-hole assembly with 6 dimensions
             
-            payload = {
-                "contents": [{"parts": [{"text": context + "\n\nIntrebare: " + intrebare}]}]
-            }
+            PARAMETERS:
+            • Alpha (0.1-1.0): fractional memory parameter
+            • Beta (0-1): neuron state - ~0.85 = aggressive, ~0.15 = relaxed
+            • Delta: adjustment step (0.01-0.50)
+            • Cost = sum(1/tolerance)
+            • Gap = R_hole - R_pin - center_distance
             
-            raspuns_api = requests.post(url, json=payload, headers=headers)
+            HOW TO RESPOND:
+            • Respond clearly, concisely and precisely
+            • Use correct technical terms
+            • Provide intuitive explanations
+            • If you don't know something, say so honestly
+            • Use English
+            """
             
-            if raspuns_api.status_code == 200:
-                raspuns = raspuns_api.json()['candidates'][0]['content']['parts'][0]['text']
-                st.markdown(raspuns)
-            else:
-                st.error(f"Eroare API: {raspuns_api.status_code}")
-                st.write(raspuns_api.text[:300])
+            context = context_ro if st.session_state.lang == 'ro' else context_en
+            
+            # Adăugăm istoricul conversației
+            conversation_context = context + "\n\nISTORIC CONVERSAȚIE:\n"
+            for msg in st.session_state.chat_history[-5:]:
+                role = "Utilizator" if msg['role'] == 'user' else "Asistent"
+                conversation_context += f"{role}: {msg['content']}\n"
+            
+            conversation_context += f"\nÎNTREBARE: {intrebare}\n\nRĂSPUNS:"
+            
+            try:
+                api_key = st.secrets.get("GEMINI_API_KEY", "")
+                
+                if not api_key:
+                    st.error(t['ai_error_key'])
+                    st.session_state.chat_history.append({
+                        'role': 'assistant',
+                        'content': "⚠️ " + ("Cheia API nu este configurată. Contactează administratorul." if st.session_state.lang == 'ro' else "API key not configured. Contact the administrator.")
+                    })
+                elif not GEMINI_AVAILABLE:
+                    st.error(t['ai_error_lib'])
+                    st.session_state.chat_history.append({
+                        'role': 'assistant',
+                        'content': "⚠️ " + ("Biblioteca AI nu este instalată corect." if st.session_state.lang == 'ro' else "AI library not installed correctly.")
+                    })
+                else:
+                    # Configurare Gemini
+                    genai.configure(api_key=api_key)
+                    
+                    # Folosim modelul corect
+                    try:
+                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        response = model.generate_content(conversation_context)
+                        
+                        if response and response.text:
+                            raspuns = response.text
+                            st.session_state.chat_history.append({
+                                'role': 'assistant',
+                                'content': raspuns
+                            })
+                            st.rerun()
+                        else:
+                            st.error("❌ " + ("Nu s-a primit un răspuns valid." if st.session_state.lang == 'ro' else "No valid response received."))
+                    except Exception as e:
+                        st.error(f"❌ {str(e)}")
+                        st.session_state.chat_history.append({
+                            'role': 'assistant',
+                            'content': f"⚠️ Eroare: {str(e)[:100]}..."
+                        })
+                        
+            except Exception as e:
+                st.error(f"❌ {str(e)}")
+                st.session_state.chat_history.append({
+                    'role': 'assistant',
+                    'content': f"⚠️ Eroare: {str(e)[:100]}..."
+                })
+    
+    # Întrebări rapide
+    st.divider()
+    st.markdown(f"### {t['ai_quick']}")
+    
+    quick_questions_ro = [
+        "Ce este Beta și cum se calculează?",
+        "Cum funcționează teorema colțurilor?",
+        "Care este diferența față de metodele clasice?",
+        "Ce face neuronul fracționar?",
+        "Cum interpretez graficul costului?"
+    ]
+    
+    quick_questions_en = [
+        "What is Beta and how is it calculated?",
+        "How does the corner theorem work?",
+        "What's the difference from classical methods?",
+        "What does the fractional neuron do?",
+        "How do I interpret the cost chart?"
+    ]
+    
+    quick_questions = quick_questions_ro if st.session_state.lang == 'ro' else quick_questions_en
+    
+    cols = st.columns(5)
+    for i, q in enumerate(quick_questions):
+        with cols[i]:
+            if st.button(q[:20] + "...", key=f"quick_{i}", use_container_width=True):
+                # Setăm întrebarea în input
+                st.session_state.ai_question_input = q
+                st.rerun()
