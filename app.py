@@ -1413,32 +1413,30 @@ with tab6:
     
     if intrebare:
         with st.spinner("Se genereaza raspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
-            try:
-                import google.generativeai as genai
-                
-                # 1. Preluarea cheii API din Streamlit Secrets
-                api_key = st.secrets["GEMINI_API_KEY"]
-                genai.configure(api_key=api_key)
-                
-                # 2. Definim contextul asistentului ca instructiune de sistem
-                context = """Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor.
-                Sistem multi-agent cu neuron fractionar. Doi agenti: Proiectantul si Testerul.
-                64 de colturi verificate. Garantie absoluta. Validat in SolidWorks.
-                Raspunde scurt, la obiect si in limba in care ti se pune intrebarea."""
-                
-                # 3. Instantierea modelului cu instructiunea de sistem
-                model = genai.GenerativeModel(
-                    model_name="gemini-1.5-flash",
-                    system_instruction=context
-                )
-                
-                # 4. Generarea raspunsului
-                raspuns = model.generate_content(intrebare)
-                
-                # 5. Afisarea pe ecran
-                st.markdown(raspuns.text)
-                
-            except KeyError:
-                st.error("⚠️ Cheia API lipsește. Asigură-te că ai 'GEMINI_API_KEY' în fișierul .streamlit/secrets.toml sau în setările Streamlit Cloud.")
-            except Exception as e:
-                st.error(f"❌ A apărut o eroare la comunicarea cu Gemini: {e}")
+            context = """
+            Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor.
+            Sistem multi-agent cu neuron fractionar.
+            Doi agenti: Proiectantul si Testerul.
+            64 de colturi verificate exhaustiv. Garantie matematica absoluta.
+            Raspunde scurt, clar, in limba intrebarii.
+            """
+            
+            url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+            
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": st.secrets["GEMINI_API_KEY"]
+            }
+            
+            payload = {
+                "contents": [{"parts": [{"text": context + "\n\nIntrebare: " + intrebare}]}]
+            }
+            
+            raspuns_api = requests.post(url, json=payload, headers=headers)
+            
+            if raspuns_api.status_code == 200:
+                raspuns = raspuns_api.json()['candidates'][0]['content']['parts'][0]['text']
+                st.markdown(raspuns)
+            else:
+                st.error(f"Eroare API: {raspuns_api.status_code}")
+                st.write(raspuns_api.text[:300])
