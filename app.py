@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import time
+import plotly.graph_objects as go
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
