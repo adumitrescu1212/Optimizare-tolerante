@@ -683,6 +683,34 @@ with tab2:
             """, unsafe_allow_html=True)
         csv = pd.DataFrame(istoric).to_csv(index=False).encode('utf-8')
         st.download_button(t['export'], csv, 'istoric_optimizare.csv', 'text/csv')
+                if st.button("📄 Exporta PDF"):
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+            
+            pdf.cell(200, 10, txt="Rezultate Optimizare Tolerante", ln=True, align='C')
+            pdf.ln(10)
+            pdf.cell(200, 10, txt=f"Alpha: {alpha}", ln=True)
+            pdf.cell(200, 10, txt=f"Delta: {delta}", ln=True)
+            pdf.cell(200, 10, txt=f"Toleranta initiala: {tol_init}", ln=True)
+            pdf.ln(10)
+            pdf.cell(200, 10, txt=f"Iteratii totale: {iteratii}", ln=True)
+            pdf.cell(200, 10, txt=f"Cost optim: {proiectant.calculeaza_cost():.2f}", ln=True)
+            pdf.cell(200, 10, txt=f"Cost initial: {np.sum(1.0/(tolerante_init + 1e-9)):.2f}", ln=True)
+            pdf.ln(10)
+            pdf.cell(200, 10, txt="Tolerante optime:", ln=True)
+            for i, cota in enumerate(t['cote']):
+                pdf.cell(200, 8, txt=f"  {cota}: +/-{proiectant.propune_tolerante()[i]:.5f} mm", ln=True)
+            pdf.ln(10)
+            pdf.cell(200, 10, txt=f"Probabilitate defect (Monte Carlo): {100*defecte_mc/n_mc:.3f}%", ln=True)
+            
+            pdf_output = pdf.output(dest='S').encode('latin-1')
+            st.download_button(
+                "Descarca PDF-ul",
+                data=pdf_output,
+                file_name="rezultate_optimizare.pdf",
+                mime="application/pdf"
+            )
         st.success("👈 " + ("Mergi la tab-ul Grafice." if st.session_state.lang == 'ro' else "Go to Charts tab."))
     else:
         st.info(t['wait'])
