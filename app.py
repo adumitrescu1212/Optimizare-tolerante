@@ -1406,8 +1406,6 @@ with tab6:
         <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
             <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
             Pune orice intrebare despre acest proiect — tolerante, agenti, neuron fractionar, rezultate, validare CAD.
-            Asistentul are context despre sistemul multi-agent, teorema celor 64 de colturi, simularea Monte Carlo
-            si elementele de originalitate ale lucrarii.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -1416,8 +1414,6 @@ with tab6:
         <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
             <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
             Ask anything about this project — tolerances, agents, fractional neuron, results, CAD validation.
-            The assistant has context about the multi-agent system, the 64-corner theorem, Monte Carlo simulation
-            and the originality elements of the work.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -1433,56 +1429,50 @@ with tab6:
             Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
             
             DESPRE PROIECT:
-            - Titlu: Sistem multi-agent cu neuron fractionar pentru optimizarea tolerantelor intr-un ansamblu mecanic
-            - Ansamblu mecanic: o baza cu 2 stifturi cilindrice si un capac cu 2 gauri circulare
-            - 6 cote tolerante: diametru stift (10 mm), diametru gaura (10.2 mm), distante pe X si Y (50 mm, 40 mm)
-            - Doi agenti software: Proiectantul (vrea tolerante largi = cost minim) si Testerul (verifica exhaustiv)
-            - Testerul verifica toate cele 2^6 = 64 de combinatii extreme (colturi ale domeniului de toleranta)
-            - Teorema de localizare a minimului: minimul functiei de joc se atinge la unul din cele 64 de colturi
-            - Garantie matematica absolută: niciun defect nu poate scapa nedetectat
-            - Neuron fractionar (derivata Grunwald-Letnikov, alpha = 0.7) controleaza factorul de agresivitate Beta
-            - Beta ~ 0.85 = sistem alert (strange agresiv), Beta ~ 0.15 = sistem relaxat (ajustari fine)
-            - Functia de joc: f(X) = (x2-x1)/2 - sqrt((x3-x5)^2 + (x4-x6)^2)
-            - Functia de cost: Cost(T) = suma(1/t_i) pentru i=1..6
-            - Convergenta: sistemul se opreste dupa 2 iteratii consecutive fara defecte
-            - Rezultate: ~110 iteratii, cost optim ~211, probabilitate defect 0% (Monte Carlo cu 5000 esantioane)
-            - Validare experimentala: SolidWorks Student, instrumentul Interference Detection
-            - 3 scenarii validate: caz nominal (OK), caz critic cu tolerante largi (interferenta ~89 mm^3), caz critic cu tolerante optime (OK)
-            - Algoritmi: EVEA-DD (Tester), GTBA-DD (Proiectant), AFBN-DD (Neuron), ADLC-DD (Bucla principala)
-            - Aplicatie web: Streamlit, bilingva RO/EN, tema dark/light
+            - Sistem multi-agent cu neuron fractionar pentru optimizarea tolerantelor
+            - Ansamblu mecanic: baza cu 2 stifturi, capac cu 2 gauri, 6 cote tolerante
+            - Doi agenti: Proiectantul (tolerante largi = cost mic) si Testerul (verifica 64 colturi)
+            - Teorema de localizare a minimului: minimul se atinge la unul din cele 64 de colturi
+            - Garantie matematica absoluta: niciun defect nu scapa nedetectat
+            - Neuron fractionar (Grunwald-Letnikov, alpha=0.7) controleaza Beta
+            - Beta ~0.85 = alerta, Beta ~0.15 = relaxat
+            - Cost = suma(1/t_i), convergenta dupa 2 OK consecutive
+            - Rezultate: ~110 iteratii, cost ~211, probabilitate defect 0% (Monte Carlo 5000)
+            - Validat in SolidWorks cu Interference Detection
+            - Algoritmi: EVEA-DD, GTBA-DD, AFBN-DD, ADLC-DD
             
-            Raspunde scurt, clar, in limba in care e pusa intrebarea.
-            Daca nu stii raspunsul, spune ca nu ai informatia si indruma catre documentatia lucrarii.
-            Nu inventa informatii care nu sunt in context.
+            Raspunde scurt, clar, in limba intrebarii.
             """
             
-            headers = {"Authorization": f"Bearer {st.secrets['GEMINI_API_KEY']}"}
             url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-            raspuns_api = requests.post(url, json=payload, headers=headers)
+            
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": st.secrets["GEMINI_API_KEY"]
+            }
             
             payload = {
                 "contents": [{"parts": [{"text": context + "\n\nIntrebare: " + intrebare}]}]
             }
             
-            raspuns_api = requests.post(url, json=payload)
+            raspuns_api = requests.post(url, json=payload, headers=headers)
             
             if raspuns_api.status_code == 200:
                 raspuns = raspuns_api.json()['candidates'][0]['content']['parts'][0]['text']
                 st.markdown(raspuns)
             else:
-                st.error(f"Eroare API: {raspuns_api.status_code}. Verificati API key-ul.")
+                st.error(f"Eroare API: {raspuns_api.status_code}")
+                st.write(f"Detalii: {raspuns_api.text[:200]}")
     
     st.divider()
     
-    # Sugestii de intrebari
     if st.session_state.lang == 'ro':
         st.markdown("**Sugestii de intrebari:**")
         sugestii = [
             "Ce este Beta si ce valori poate lua?",
             "De ce verificam doar 64 de combinatii?",
             "Ce face fiecare agent?",
-            "Ce este simularea Monte Carlo?",
-            "Cum se calculeaza costul?"
+            "Ce este simularea Monte Carlo?"
         ]
     else:
         st.markdown("**Suggested questions:**")
@@ -1490,11 +1480,10 @@ with tab6:
             "What is Beta and what values can it take?",
             "Why do we check only 64 combinations?",
             "What does each agent do?",
-            "What is the Monte Carlo simulation?",
-            "How is the cost calculated?"
+            "What is the Monte Carlo simulation?"
         ]
     
     for s in sugestii:
-        if st.button(s, key=f"btn_{s[:20]}"):
-            st.session_state['intrebare_sugerata'] = s
+        if st.button(s, key=f"sug_{s[:15]}"):
+            st.session_state['intrebare'] = s
             st.rerun()
