@@ -1456,7 +1456,9 @@ with tab6:
             Nu inventa informatii care nu sunt in context.
             """
             
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={st.secrets['GEMINI_API_KEY']}"
+            headers = {"Authorization": f"Bearer {st.secrets['GEMINI_API_KEY']}"}
+            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+            raspuns_api = requests.post(url, json=payload, headers=headers)
             
             payload = {
                 "contents": [{"parts": [{"text": context + "\n\nIntrebare: " + intrebare}]}]
