@@ -5,7 +5,7 @@ import time
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
-from fpdf1 import FPDF
+from fpdf2 import FPDF
 
 st.set_page_config(page_title="Optimizare Tolerante DD", page_icon="⚙️", layout="wide")
 
