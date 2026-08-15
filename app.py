@@ -1407,7 +1407,7 @@ with tab5:
         """, unsafe_allow_html=True)
 
 # ================================================================
-# TAB 6: ASISTENT AI (VERSIONEA ÎMBUNĂTĂȚITĂ)
+# TAB 6: ASISTENT AI
 # ================================================================
 with tab6:
     st.title("💬 " + ("Asistent AI" if st.session_state.lang == 'ro' else "AI Assistant"))
@@ -1440,6 +1440,10 @@ with tab6:
         </div>
         """, unsafe_allow_html=True)
     
+    # Inițializare istoric chat
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+    
     # Layout cu 2 coloane
     col_question, col_history = st.columns([2, 1])
     
@@ -1447,7 +1451,7 @@ with tab6:
         # Input întrebare
         intrebare = st.text_area(
             "Întrebarea ta:" if st.session_state.lang == 'ro' else "Your question:",
-            placeholder=t['ai_placeholder'],
+            placeholder="Ex: Cum funcționează neuronul fracționar?" if st.session_state.lang == 'ro' else "E.g.: How does the fractional neuron work?",
             height=100,
             key="ai_question_input"
         )
@@ -1455,14 +1459,14 @@ with tab6:
         col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
         with col_btn1:
             ask_button = st.button(
-                t['ai_ask'],
+                "🔍 Întreabă" if st.session_state.lang == 'ro' else "🔍 Ask",
                 type="primary",
                 use_container_width=True,
                 key="ai_ask_btn"
             )
         with col_btn2:
             if st.button(
-                t['ai_clear'],
+                "🗑️ Șterge istoric" if st.session_state.lang == 'ro' else "🗑️ Clear history",
                 use_container_width=True,
                 key="ai_clear_btn"
             ):
@@ -1477,25 +1481,22 @@ with tab6:
                 st.warning("⚠️ API offline" if st.session_state.lang == 'ro' else "⚠️ API offline")
     
     with col_history:
-        st.markdown(f"### {t['ai_stats']}")
+        st.markdown(f"### 📊 Statistici")
         total_q = len([m for m in st.session_state.chat_history if m['role'] == 'user'])
         total_a = len([m for m in st.session_state.chat_history if m['role'] == 'assistant'])
-        st.metric(t['ai_questions'], total_q)
+        st.metric("Întrebări" if st.session_state.lang == 'ro' else "Questions", total_q)
         st.metric("Răspunsuri" if st.session_state.lang == 'ro' else "Answers", total_a)
     
     # Afișare istoric
     if st.session_state.chat_history:
         st.divider()
-        st.markdown(f"### {t['ai_conversation']}")
+        st.markdown(f"### 💬 " + ("Conversație" if st.session_state.lang == 'ro' else "Conversation"))
         
-        # Container scrollabil pentru istoric
-        chat_container = st.container()
-        with chat_container:
-            for msg in st.session_state.chat_history:
-                if msg['role'] == 'user':
-                    st.chat_message("user").write(msg['content'])
-                else:
-                    st.chat_message("assistant").write(msg['content'])
+        for msg in st.session_state.chat_history:
+            if msg['role'] == 'user':
+                st.chat_message("user").write(msg['content'])
+            else:
+                st.chat_message("assistant").write(msg['content'])
     
     # Procesare întrebare
     if ask_button and intrebare:
@@ -1503,60 +1504,59 @@ with tab6:
             # Adăugăm întrebarea în istoric
             st.session_state.chat_history.append({'role': 'user', 'content': intrebare})
             
-            # Construim contextul
-            context_ro = f"""
-            Ești un asistent AI specializat pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
+            # Construim contextul pentru Gemini
+            if st.session_state.lang == 'ro':
+                context = f"""
+                Ești un asistent AI specializat pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
+                
+                DESPRE PROIECT:
+                • Sistem multi-agent cu doi agenți: Proiectantul (propune toleranțe) și Testerul (verifică)
+                • Neuron fracționar bazat pe derivata Grunwald-Letnikov pentru control adaptiv
+                • Teorema colțurilor: minimul funcției de joc se află la unul din 64 de colțuri
+                • Garantie matematică absolută a asamblării
+                • Optimizare pentru un ansamblu stift-gaură cu 6 cote dimensionale
+                
+                PARAMETRI:
+                • Alpha (0.1-1.0): parametru de memorie fracționară
+                • Beta (0-1): stare neuron - ~0.85 = agresiv, ~0.15 = relaxat
+                • Delta: pas de ajustare (0.01-0.50)
+                • Cost = sumă(1/toleranță)
+                • Joc = R_gaura - R_stift - distanța_centre
+                
+                CUM RĂSPUNZI:
+                • Răspunde în limba română
+                • Răspunde clar, concis și precis
+                • Folosește termeni tehnici corecți
+                • Oferă explicații intuitive
+                • Dacă nu știi ceva, spune sincer
+                """
+            else:
+                context = f"""
+                You are an AI assistant specialized in a research project about dimensional tolerance optimization.
+                
+                ABOUT THE PROJECT:
+                • Multi-agent system with two agents: Designer (proposes tolerances) and Tester (verifies)
+                • Fractional neuron based on Grunwald-Letnikov derivative for adaptive control
+                • Corner theorem: the minimum of the gap function is at one of 64 corners
+                • Absolute mathematical guarantee of assembly
+                • Optimization for a pin-hole assembly with 6 dimensions
+                
+                PARAMETERS:
+                • Alpha (0.1-1.0): fractional memory parameter
+                • Beta (0-1): neuron state - ~0.85 = aggressive, ~0.15 = relaxed
+                • Delta: adjustment step (0.01-0.50)
+                • Cost = sum(1/tolerance)
+                • Gap = R_hole - R_pin - center_distance
+                
+                HOW TO RESPOND:
+                • Respond in English
+                • Respond clearly, concisely and precisely
+                • Use correct technical terms
+                • Provide intuitive explanations
+                • If you don't know something, say so honestly
+                """
             
-            DESPRE PROIECT:
-            • Sistem multi-agent cu doi agenți: Proiectantul (propune toleranțe) și Testerul (verifică)
-            • Neuron fracționar bazat pe derivata Grunwald-Letnikov pentru control adaptiv
-            • Teorema colțurilor: minimul funcției de joc se află la unul din 64 de colțuri
-            • Garantie matematică absolută a asamblării
-            • Optimizare pentru un ansamblu stift-gaură cu 6 cote dimensionale
-            
-            PARAMETRI:
-            • Alpha (0.1-1.0): parametru de memorie fracționară
-            • Beta (0-1): stare neuron - ~0.85 = agresiv, ~0.15 = relaxat
-            • Delta: pas de ajustare (0.01-0.50)
-            • Cost = sumă(1/toleranță)
-            • Joc = R_gaura - R_stift - distanța_centre
-            
-            CUM RĂSPUNZI:
-            • Răspunde clar, concis și precis
-            • Folosește termeni tehnici corecți
-            • Oferă explicații intuitive
-            • Dacă nu știi ceva, spune sincer
-            • Folosește limba română
-            """
-            
-            context_en = f"""
-            You are an AI assistant specialized in a research project about dimensional tolerance optimization.
-            
-            ABOUT THE PROJECT:
-            • Multi-agent system with two agents: Designer (proposes tolerances) and Tester (verifies)
-            • Fractional neuron based on Grunwald-Letnikov derivative for adaptive control
-            • Corner theorem: the minimum of the gap function is at one of 64 corners
-            • Absolute mathematical guarantee of assembly
-            • Optimization for a pin-hole assembly with 6 dimensions
-            
-            PARAMETERS:
-            • Alpha (0.1-1.0): fractional memory parameter
-            • Beta (0-1): neuron state - ~0.85 = aggressive, ~0.15 = relaxed
-            • Delta: adjustment step (0.01-0.50)
-            • Cost = sum(1/tolerance)
-            • Gap = R_hole - R_pin - center_distance
-            
-            HOW TO RESPOND:
-            • Respond clearly, concisely and precisely
-            • Use correct technical terms
-            • Provide intuitive explanations
-            • If you don't know something, say so honestly
-            • Use English
-            """
-            
-            context = context_ro if st.session_state.lang == 'ro' else context_en
-            
-            # Adăugăm istoricul conversației
+            # Adăugăm istoricul conversației (ultimele 5 mesaje)
             conversation_context = context + "\n\nISTORIC CONVERSAȚIE:\n"
             for msg in st.session_state.chat_history[-5:]:
                 role = "Utilizator" if msg['role'] == 'user' else "Asistent"
@@ -1565,25 +1565,26 @@ with tab6:
             conversation_context += f"\nÎNTREBARE: {intrebare}\n\nRĂSPUNS:"
             
             try:
+                # Ia cheia API din secrets
                 api_key = st.secrets.get("GEMINI_API_KEY", "")
                 
                 if not api_key:
-                    st.error(t['ai_error_key'])
+                    st.error("❌ Cheia API Gemini nu este configurată. Adaugă GEMINI_API_KEY în Streamlit Cloud Secrets.")
                     st.session_state.chat_history.append({
                         'role': 'assistant',
-                        'content': "⚠️ " + ("Cheia API nu este configurată. Contactează administratorul." if st.session_state.lang == 'ro' else "API key not configured. Contact the administrator.")
+                        'content': "⚠️ " + ("Cheia API nu este configurată. Adaugă GEMINI_API_KEY în Streamlit Cloud Secrets." if st.session_state.lang == 'ro' else "API key not configured. Add GEMINI_API_KEY in Streamlit Cloud Secrets.")
                     })
                 elif not GEMINI_AVAILABLE:
-                    st.error(t['ai_error_lib'])
+                    st.error("❌ Biblioteca google-generativeai nu este instalată. Adaugă google-generativeai în requirements.txt.")
                     st.session_state.chat_history.append({
                         'role': 'assistant',
-                        'content': "⚠️ " + ("Biblioteca AI nu este instalată corect." if st.session_state.lang == 'ro' else "AI library not installed correctly.")
+                        'content': "⚠️ " + ("Biblioteca google-generativeai nu este instalată. Adaugă google-generativeai în requirements.txt." if st.session_state.lang == 'ro' else "google-generativeai library not installed. Add google-generativeai to requirements.txt.")
                     })
                 else:
                     # Configurare Gemini
                     genai.configure(api_key=api_key)
                     
-                    # Folosim modelul corect
+                    # Folosim modelul
                     try:
                         model = genai.GenerativeModel('gemini-1.5-flash')
                         response = model.generate_content(conversation_context)
@@ -1601,19 +1602,19 @@ with tab6:
                         st.error(f"❌ {str(e)}")
                         st.session_state.chat_history.append({
                             'role': 'assistant',
-                            'content': f"⚠️ Eroare: {str(e)[:100]}..."
+                            'content': f"⚠️ Eroare: {str(e)[:150]}..."
                         })
                         
             except Exception as e:
                 st.error(f"❌ {str(e)}")
                 st.session_state.chat_history.append({
                     'role': 'assistant',
-                    'content': f"⚠️ Eroare: {str(e)[:100]}..."
+                    'content': f"⚠️ Eroare: {str(e)[:150]}..."
                 })
     
     # Întrebări rapide
     st.divider()
-    st.markdown(f"### {t['ai_quick']}")
+    st.markdown(f"### ⚡ " + ("Întrebări rapide" if st.session_state.lang == 'ro' else "Quick questions"))
     
     quick_questions_ro = [
         "Ce este Beta și cum se calculează?",
