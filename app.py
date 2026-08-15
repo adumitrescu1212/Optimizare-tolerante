@@ -11,6 +11,15 @@ from model_matematic import functia_de_joc, valori_nominale
 
 st.set_page_config(page_title="Optimizare Tolerante DD", page_icon="⚙️", layout="wide")
 
+# ---------- Import Gemini ----------
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    st.warning("⚠️ google-generativeai nu este instalat. Asistentul AI va folosi modul offline.")
+
+
 # ---------- Dictionar traduceri ----------
 LANG = {
     'ro': {
