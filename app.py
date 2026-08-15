@@ -2,13 +2,11 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import time
-import google.generativeai as genai
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
 
 st.set_page_config(page_title="Optimizare Tolerante DD", page_icon="⚙️", layout="wide")
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # ---------- Dictionar traduceri ----------
 LANG = {
