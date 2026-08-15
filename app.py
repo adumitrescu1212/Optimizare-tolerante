@@ -733,33 +733,8 @@ with tab3:
         tg1, tg2, tg3 = st.tabs([t['chart_cost'], t['chart_beta'], t['chart_joc']])
         
         with tg1:
-            # Cost cu culoare personalizata
-            st.markdown("""
-            <style>
-                .stPlotlyChart { border-radius: 12px; }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            import plotly.graph_objects as go
-            
-            fig_cost = go.Figure()
-            fig_cost.add_trace(go.Scatter(
-                x=df['Iterație'], 
-                y=df['Cost'],
-                mode='lines',
-                name='Cost',
-                line=dict(color='#667eea', width=2.5),
-                fill='tozeroy',
-                fillcolor='rgba(102,126,234,0.1)'
-            ))
-            fig_cost.update_layout(
-                height=400,
-                margin=dict(l=10, r=10, t=10, b=10),
-                xaxis_title="Iterație",
-                yaxis_title="Cost",
-                template="plotly_white"
-            )
-            st.plotly_chart(fig_cost, use_container_width=True)
+            # Grafic Cost - linie cu culoare
+            st.line_chart(df, x='Iterație', y='Cost', height=400, color='#667eea')
             
             # Statistici
             c1, c2, c3 = st.columns(3)
@@ -787,25 +762,10 @@ with tab3:
                 """, unsafe_allow_html=True)
         
         with tg2:
-            fig_beta = go.Figure()
-            fig_beta.add_trace(go.Scatter(
-                x=df['Iterație'], 
-                y=df['Beta'],
-                mode='lines',
-                name='Beta',
-                line=dict(color='#e74c3c', width=2.5),
-                fill='tozeroy',
-                fillcolor='rgba(231,76,60,0.08)'
-            ))
-            fig_beta.update_layout(
-                height=400,
-                margin=dict(l=10, r=10, t=10, b=10),
-                xaxis_title="Iterație",
-                yaxis_title="Beta",
-                template="plotly_white"
-            )
-            st.plotly_chart(fig_beta, use_container_width=True)
+            # Grafic Beta - linie cu culoare
+            st.line_chart(df, x='Iterație', y='Beta', height=400, color='#e74c3c')
             
+            # Statistici
             c1, c2, c3 = st.columns(3)
             c1.metric("Minim", f"{df['Beta'].min():.3f}")
             c2.metric("Maxim", f"{df['Beta'].max():.3f}")
@@ -831,28 +791,10 @@ with tab3:
                 """, unsafe_allow_html=True)
         
         with tg3:
-            fig_joc = go.Figure()
-            fig_joc.add_trace(go.Scatter(
-                x=df['Iterație'], 
-                y=df['Joc (mm)'],
-                mode='lines',
-                name='Joc',
-                line=dict(color='#28a745', width=2.5),
-                fill='tozeroy',
-                fillcolor='rgba(40,167,69,0.08)'
-            ))
-            # Linie de referinta la 0
-            fig_joc.add_hline(y=0, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Frontiera")
-            fig_joc.add_hline(y=-0.01, line_dash="dot", line_color="red", opacity=0.3, annotation_text="-0.01 mm")
-            fig_joc.update_layout(
-                height=400,
-                margin=dict(l=10, r=10, t=10, b=10),
-                xaxis_title="Iterație",
-                yaxis_title="Joc (mm)",
-                template="plotly_white"
-            )
-            st.plotly_chart(fig_joc, use_container_width=True)
+            # Grafic Joc - linie cu culoare
+            st.line_chart(df, x='Iterație', y='Joc (mm)', height=400, color='#28a745')
             
+            # Statistici
             c1, c2, c3 = st.columns(3)
             c1.metric("Minim", f"{df['Joc (mm)'].min():.4f} mm")
             c2.metric("Maxim", f"{df['Joc (mm)'].max():.4f} mm")
@@ -863,8 +805,8 @@ with tab3:
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
                     <strong>🟢 Cum interpretam:</strong> Jocul porneste <strong>puternic negativ</strong> (interferenta majora)
-                    si creste spre zero. Linia intrerupta rosie e pragul de -0.01 mm.
-                    Cand jocul trece de linia gri (0), ansamblul functioneaza corect.
+                    si creste spre zero. Cand jocul devine pozitiv, ansamblul functioneaza corect.
+                    Sistemul gaseste exact <strong>frontiera de fezabilitate</strong> — punctul optim.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -873,8 +815,8 @@ with tab3:
                 <div style="background: rgba(128,128,128,0.05); border-radius: 8px; padding: 15px; margin-top: 10px;">
                     <p style="font-size: 0.95rem; line-height: 1.6; margin: 0;">
                     <strong>🟢 How to interpret:</strong> The gap starts <strong>strongly negative</strong>
-                    and rises toward zero. The red dotted line is the -0.01 mm threshold.
-                    When the gap crosses the gray line (0), the assembly works correctly.
+                    and rises toward zero. When the gap becomes positive, the assembly works correctly.
+                    The system finds exactly the <strong>feasibility boundary</strong> — the optimal point.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
