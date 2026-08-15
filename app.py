@@ -2,11 +2,13 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import time
+import google.generativeai as genai
 from agent_tester import AgentTester
 from agent_proiectant import AgentProiectant
 from model_matematic import functia_de_joc, valori_nominale
 
 st.set_page_config(page_title="Optimizare Tolerante DD", page_icon="⚙️", layout="wide")
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # ---------- Dictionar traduceri ----------
 LANG = {
@@ -234,7 +236,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 # ---------- Tab-uri ----------
-tab1, tab2, tab3, tab4, tab5 = st.tabs([t['tab1'], t['tab2'], t['tab3'], t['tab4'], t['tab5']])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    t['tab1'], t['tab2'], t['tab3'], t['tab4'], t['tab5'], "💬 Asistent AI"
+])
 
 # ================================================================
 # TAB 1: ACASA
@@ -1391,5 +1395,42 @@ with tab5:
             <strong>💻 Implementare:</strong> <code>principal.py</code> → bucla principala
         </div>
         """, unsafe_allow_html=True)
+
+    # ================================================================
+# TAB 6: ASISTENT AI
+# ================================================================
+with tab6:
+    st.title("💬 Asistent AI")
     
+    if st.session_state.lang == 'ro':
+        st.markdown("Pune orice intrebare despre acest proiect — tolerante, agenti, neuron fractionar, rezultate.")
+    else:
+        st.markdown("Ask anything about this project — tolerances, agents, fractional neuron, results.")
+    
+    intrebare = st.text_input("Intrebarea ta:" if st.session_state.lang == 'ro' else "Your question:")
+    
+    if intrebare:
+        with st.spinner("Se genereaza raspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
+            context = """
+            Tu esti un asistent AI pentru un proiect de cercetare despre optimizarea tolerantelor.
+            
+            DESPRE PROIECT:
+            - Sistem multi-agent cu neuron fractionar pentru optimizarea tolerantelor
+            - Doi agenti: Proiectantul (vrea tolerante largi, cost mic) si Testerul (verifica 64 de colturi)
+            - Neuron fractionar (derivata Grunwald-Letnikov) controleaza agresivitatea (Beta)
+            - Ansamblu mecanic: baza cu 2 stifturi, capac cu 2 gauri, 6 cote tolerante
+            - Garantie matematica absoluta prin enumerarea celor 64 de colturi
+            - Validat experimental in SolidWorks cu Interference Detection
+            - Alpha = 0.7, Delta = 0.2, toleranta initiala = 0.5 mm
+            - Rezultate: converge in ~110 iteratii, cost optim ~211, probabilitate defect 0% (Monte Carlo 5000)
+            - Garanție absolută: Testerul enumeră exhaustiv toate 2^6=64 combinații extreme
+            - Cost = suma(1/toleranta), Beta ~0.85 alerta / ~0.15 relaxat
+            
+            Raspunde scurt, clar, in limba in care e pusa intrebarea.
+            Daca nu stii raspunsul, spune ca nu ai informatia si indruma catre documentatie.
+            """
+            
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            raspuns = model.generate_content(context + "\n\nIntrebare: " + intrebare)
+            st.write(raspuns.text)
     
