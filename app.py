@@ -128,7 +128,8 @@ with st.sidebar:
     
     st.divider()
     run = st.button(t['run'], type="primary", use_container_width=True)
-
+    mod_rapid = st.checkbox("⚡ Mod rapid", value=False, 
+                            help="Optimizare fara animatie. Rezultate instant.")
 # ---------- Dark theme ----------
 if st.session_state.theme == 'dark':
     st.markdown("""
@@ -461,7 +462,7 @@ with tab2:
             m_cost.metric(t['cost_opt'], f"{cost:.2f}", 
                          help="Costul total al tolerantelor. Formula: Cost = suma(1/toleranta). Mai mic = fabricatie mai ieftina.")
             m_beta.metric("Beta", f"{beta:.3f}", 
-                         help="Factorul de agresivitate al neuronului fractionar. ~0.85 = sistem alert (strange agresiv). ~0.15 = sistem relaxat (ajustari fine). Memoria lunga oferita de calculul fractionar controleaza acest factor.")
+                         help="Factorul de agresivitate al neuronului fractionar. ~0.85 = sistem alert (strange agresiv). ~0.15 = sistem relaxat (ajustari fine).")
             
             # Calcul proporție pentru bară
             if rezultat == "DEFECT":
@@ -476,79 +477,75 @@ with tab2:
                 culoare = "#28a745"
                 actiune = "incearca sa largeasca tolerantele"
             
-            total_actiuni = total_defecte + total_ok
-            proc_defecte = int(100 * total_defecte / total_actiuni) if total_actiuni > 0 else 0
-            proc_ok = 100 - proc_defecte
-            
             # Arena luptei - Doi Roboti
-            if st.session_state.lang == 'ro':
-                arena.markdown(f"""
-                <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
-                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Confruntarea Agentilor — Iteratia {iteratii}</h4>
-                    <div style="display: flex; justify-content: space-around; align-items: center;">
-                        <div style="text-align: center;">
-                            <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
-                                        transition: all 0.3s ease;
-                                        filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
-                                        opacity: {1 if rezultat == 'DEFECT' else 0.6};">
-                                🔴
+            if not mod_rapid:
+                if st.session_state.lang == 'ro':
+                    arena.markdown(f"""
+                    <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
+                        <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Confruntarea Agentilor — Iteratia {iteratii}</h4>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div style="text-align: center;">
+                                <img src="https://raw.githubusercontent.com/adumitrescu1212/optimizare-tolerante/main/robot_rosu.gif" 
+                                     width="{110 if rezultat == 'DEFECT' else 85}" 
+                                     style="transition: all 0.3s ease;
+                                            filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
+                                            opacity: {1 if rezultat == 'DEFECT' else 0.5};">
+                                <strong style="color: #e74c3c;">Testerul</strong><br>
+                                <small style="color: #888;">Beta: {beta:.3f}</small><br>
+                                <small style="color: #888;">Joc: {joc:.4f} mm</small>
                             </div>
-                            <strong style="color: #e74c3c;">Testerul</strong><br>
-                            <small style="color: #888;">Beta: {beta:.3f}</small><br>
-                            <small style="color: #888;">Joc: {joc:.4f} mm</small>
-                        </div>
-                        <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
-                            VS
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: {80 if rezultat == 'OK' else 60}px; 
-                                        transition: all 0.3s ease;
-                                        filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
-                                        opacity: {1 if rezultat == 'OK' else 0.6};">
-                                🔵
+                            <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
+                                VS
                             </div>
-                            <strong style="color: #667eea;">Proiectantul</strong><br>
-                            <small style="color: #888;">Cost: {cost:.2f}</small><br>
-                            <small style="color: #888;">{actiune}</small>
+                            <div style="text-align: center;">
+                                <img src="https://raw.githubusercontent.com/adumitrescu1212/optimizare-tolerante/main/robot_albastru.gif" 
+                                     width="{110 if rezultat == 'OK' else 85}" 
+                                     style="transition: all 0.3s ease;
+                                            filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
+                                            opacity: {1 if rezultat == 'OK' else 0.5};">
+                                <strong style="color: #667eea;">Proiectantul</strong><br>
+                                <small style="color: #888;">Cost: {cost:.2f}</small><br>
+                                <small style="color: #888;">{actiune}</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
+                else:
+                    arena.markdown(f"""
+                    <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
+                        <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Agent Confrontation — Iteration {iteratii}</h4>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div style="text-align: center;">
+                                <img src="https://raw.githubusercontent.com/adumitrescu1212/optimizare-tolerante/main/robot_rosu.gif" 
+                                     width="{110 if rezultat == 'DEFECT' else 85}" 
+                                     style="transition: all 0.3s ease;
+                                            filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
+                                            opacity: {1 if rezultat == 'DEFECT' else 0.5};">
+                                <strong style="color: #e74c3c;">Tester</strong><br>
+                                <small style="color: #888;">Beta: {beta:.3f}</small><br>
+                                <small style="color: #888;">Gap: {joc:.4f} mm</small>
+                            </div>
+                            <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
+                                VS
+                            </div>
+                            <div style="text-align: center;">
+                                <img src="https://raw.githubusercontent.com/adumitrescu1212/optimizare-tolerante/main/robot_albastru.gif" 
+                                     width="{110 if rezultat == 'OK' else 85}" 
+                                     style="transition: all 0.3s ease;
+                                            filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
+                                            opacity: {1 if rezultat == 'OK' else 0.5};">
+                                <strong style="color: #667eea;">Designer</strong><br>
+                                <small style="color: #888;">Cost: {cost:.2f}</small><br>
+                                <small style="color: #888;">{actiune}</small>
+                            </div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
             else:
-                arena.markdown(f"""
-                <div style="border: 1px solid #e0e0e0; border-radius: 16px; padding: 25px; background: linear-gradient(135deg, #fafafa, #f0f0f0); margin: 10px 0; text-align: center;">
-                    <h4 style="margin: 0 0 20px 0; color: #555; font-weight: 600;">Agent Confrontation — Iteration {iteratii}</h4>
-                    <div style="display: flex; justify-content: space-around; align-items: center;">
-                        <div style="text-align: center;">
-                            <div style="font-size: {80 if rezultat == 'DEFECT' else 60}px; 
-                                        transition: all 0.3s ease;
-                                        filter: drop-shadow(0 0 {20 if rezultat == 'DEFECT' else 5}px {'#ffc107' if rezultat == 'DEFECT' else '#ccc'});
-                                        opacity: {1 if rezultat == 'DEFECT' else 0.6};">
-                                🔴
-                            </div>
-                            <strong style="color: #e74c3c;">Tester</strong><br>
-                            <small style="color: #888;">Beta: {beta:.3f}</small><br>
-                            <small style="color: #888;">Gap: {joc:.4f} mm</small>
-                        </div>
-                        <div style="font-size: 2rem; font-weight: bold; color: {culoare};">
-                            VS
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: {80 if rezultat == 'OK' else 60}px; 
-                                        transition: all 0.3s ease;
-                                        filter: drop-shadow(0 0 {20 if rezultat == 'OK' else 5}px {'#28a745' if rezultat == 'OK' else '#ccc'});
-                                        opacity: {1 if rezultat == 'OK' else 0.6};">
-                                🔵
-                            </div>
-                            <strong style="color: #667eea;">Designer</strong><br>
-                            <small style="color: #888;">Cost: {cost:.2f}</small><br>
-                            <small style="color: #888;">{actiune}</small>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                arena.markdown(f"**Iteratia {iteratii}: {rezultat}** | Joc = {joc:.4f} mm | Beta = {beta:.3f} | Cost = {cost:.2f}")
             
-            time.sleep(0.8)
+            if not mod_rapid:
+                time.sleep(0.8)
             
             if fara_defect >= 2:
                 break
@@ -596,7 +593,7 @@ with tab2:
                 <strong>Ce face aceasta simulare?</strong> Sistemul a garantat deja (prin verificarea celor 64 de colturi) 
                 ca <strong>niciuna</strong> dintre combinatiile extreme nu produce interferenta. 
                 Dar in productia reala, majoritatea pieselor ies aproape de valorile nominale, nu la extreme. 
-                Monte Carlo simuleaza <strong>5000 de scenarii realiste</strong>  si estimeaza 
+                Monte Carlo simuleaza <strong>5000 de scenarii realiste</strong> si estimeaza 
                 probabilitatea de defect in conditii reale de fabricatie. 
                 Un rezultat de 0% confirma ca tolerantele optime sunt sigure.
                 </p>
@@ -628,7 +625,7 @@ with tab2:
         c1.metric(t['mc_samples'], f"{n_mc:,}")
         c2.metric(t['mc_defects'], f"{defecte_mc}")
         c3.metric(t['mc_prob'], f"{100*defecte_mc/n_mc:.3f}%")
-        c4.metric(t['mc_dist'], "Normala", help="Distributia normala (Gaussiana) centrata pe valoarea nominala, cu σ = toleranta/3. Conform regulii Six Sigma, 99.73% din piesele produse se afla in intervalul de toleranta.")
+        c4.metric(t['mc_dist'], "Normala", help="Distributia normala (Gaussiana) centrata pe valoarea nominala, cu σ = toleranta/3.")
         
         st.divider()
         st.header(t['comp_header'])
