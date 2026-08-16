@@ -11,13 +11,9 @@ from model_matematic import functia_de_joc, valori_nominale
 
 st.set_page_config(page_title="Optimizare Tolerante DD", page_icon="⚙️", layout="wide")
 
-# ---------- Import Gemini ----------
-try:
-    import google.generativeai as genai
-    GEMINI_AVAILABLE = True
-except ImportError:
-    GEMINI_AVAILABLE = False
-    st.warning("⚠️ google-generativeai nu este instalat. Asistentul AI va folosi modul offline.")
+# ---------- Import pentru API ----------
+import requests
+GEMINI_AVAILABLE = True
 
 
 # ---------- Dictionar traduceri ----------
@@ -1407,7 +1403,7 @@ with tab5:
         """, unsafe_allow_html=True)
 
 # ================================================================
-# TAB 6: ASISTENT AI - VERSIONEA FINALĂ
+# TAB 6: ASISTENT AI - VERSIONEA CU REST API
 # ================================================================
 with tab6:
     st.title("💬 " + ("Asistent AI" if st.session_state.lang == 'ro' else "AI Assistant"))
@@ -1558,15 +1554,13 @@ with tab6:
         st.divider()
         st.markdown("### 💬 " + ("Conversație" if st.session_state.lang == 'ro' else "Conversation"))
         
-        # Container scrollabil pentru istoric
-        with st.container():
-            for msg in st.session_state.chat_history:
-                if msg['role'] == 'user':
-                    st.chat_message("user").write(msg['content'])
-                else:
-                    st.chat_message("assistant").write(msg['content'])
+        for msg in st.session_state.chat_history:
+            if msg['role'] == 'user':
+                st.chat_message("user").write(msg['content'])
+            else:
+                st.chat_message("assistant").write(msg['content'])
     
-    # Procesare întrebare
+    # Procesare întrebare - VERSIONEA CU REST API (fără google-generativeai)
     if ask_button and intrebare:
         with st.spinner("Se generează răspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
             st.session_state.chat_history.append({'role': 'user', 'content': intrebare})
@@ -1625,14 +1619,23 @@ with tab6:
                         'content': "⚠️ Cheia API nu este configurată."
                     })
                 else:
-                    genai.configure(api_key=api_key)
+                    # Folosește REST API direct (fără google-generativeai)
+                    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key={api_key}"
                     
-                    try:
-                        model = genai.GenerativeModel('gemini-3.5-flash')
-                        response = model.generate_content(conversation_context)
-                        
-                        if response and response.text:
-                            raspuns = response.text
+                    payload = {
+                        "contents": [{
+                            "parts": [{"text": conversation_context}]
+                        }]
+                    }
+                    
+                    headers = {"Content-Type": "application/json"}
+                    
+                    response = requests.post(url, json=payload, headers=headers, timeout=30)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        if 'candidates' in data and len(data['candidates']) > 0:
+                            raspuns = data['candidates'][0]['content']['parts'][0]['text']
                             st.session_state.chat_history.append({
                                 'role': 'assistant',
                                 'content': raspuns
@@ -1643,11 +1646,11 @@ with tab6:
                                 'role': 'assistant',
                                 'content': "⚠️ Nu s-a primit un răspuns valid."
                             })
-                    except Exception as e:
-                        st.error(f"❌ Eroare: {str(e)}")
+                    else:
+                        st.error(f"❌ Eroare API: {response.status_code}")
                         st.session_state.chat_history.append({
                             'role': 'assistant',
-                            'content': f"⚠️ Eroare: {str(e)[:150]}"
+                            'content': f"⚠️ Eroare: {response.status_code}"
                         })
                         
             except Exception as e:
