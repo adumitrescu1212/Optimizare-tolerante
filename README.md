@@ -60,3 +60,17 @@ Sistem de optimizare a toleranțelor bazat pe o arhitectură **multi-agent adver
 ---
 
 ## 📂 Structură proiect
+
+optimizare-tolerante/
+├── app.py # Aplicația Streamlit principală
+├── agent_tester.py # Agentul Tester
+├── agent_proiectant.py # Agentul Proiectant
+├── model_matematic.py # Modelul matematic
+├── neuron_fractionar.py # Neuronul fracționar
+├── principal.py # Script pentru rulare în linie de comandă
+├── experimente.py # Experimente cu alpha
+├── requirements.txt # Dependințe
+├── .streamlit/ # Configurație Streamlit
+│ └── secrets.toml # Chei API (local)
+├── LICENSE # Licență MIT
+└── README.md # Acest fișier
