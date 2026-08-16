@@ -97,8 +97,6 @@ LANG = {
 # ---------- Initializare ----------
 if 'lang' not in st.session_state:
     st.session_state.lang = 'ro'
-if 'theme' not in st.session_state:
-    st.session_state.theme = 'light'
 
 t = LANG[st.session_state.lang]
 
@@ -115,17 +113,13 @@ with st.sidebar:
     </style>
     """, unsafe_allow_html=True)
     
-       col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("RO", use_container_width=True, key="btn_ro"):
             st.session_state.lang = 'ro'
     with col2:
         if st.button("EN", use_container_width=True, key="btn_en"):
             st.session_state.lang = 'en'
-    with col3:
-        theme_icon = "🌙" if st.session_state.theme == 'light' else "☀️"
-        if st.button(theme_icon, use_container_width=True, key="btn_theme"):
-            st.session_state.theme = 'dark' if st.session_state.theme == 'light' else 'light'
     
     st.divider()
     st.header(t['params'])
@@ -138,30 +132,7 @@ with st.sidebar:
     run = st.button(t['run'], type="primary", use_container_width=True)
     mod_rapid = st.checkbox("⚡ Mod rapid", value=False, 
                             help="Optimizare fara animatie. Rezultate instant.")
-# ---------- Dark theme ----------
-if st.session_state.theme == 'dark':
-    st.markdown("""
-    <style>
-        .stApp { background-color: #0e1117 !important; color: #fafafa !important; }
-        div[style*="background: #f8f9fa"] { background-color: #1a1c23 !important; border-color: #2d3139 !important; }
-        div[style*="background: #f0f4ff"] { background-color: #1a1c23 !important; border-color: #2d3139 !important; }
-        div[style*="background: linear-gradient"] { opacity: 0.9; }
-        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4,
-        .stMarkdown li, .stMarkdown strong { color: #e0e0e0 !important; }
-        div[style*="background: linear-gradient"] p,
-        div[style*="background: linear-gradient"] strong { color: white !important; }
-        div[data-testid="stMetric"] { background-color: #1a1c23 !important; }
-        div[data-testid="stMetric"] label { color: #999 !important; }
-        div[data-testid="stMetric"] div { color: #fafafa !important; }
-        blockquote { background-color: #1a1c23 !important; border-left: 4px solid #667eea !important; color: #e0e0e0 !important; }
-        .stDataFrame > div > div { background-color: #1a1c23 !important; }
-        div[data-testid="stAlert"] { background-color: #1a1c23 !important; }
-        .stTabs [data-baseweb="tab-list"] { background-color: #1a1c23 !important; }
-        .stTabs [aria-selected="true"] { background-color: #2d3139 !important; color: #fafafa !important; }
-    </style>
-    """, unsafe_allow_html=True)
 
-# ---------- CSS tab-uri ----------
 # ---------- CSS modern ----------
 st.markdown("""
 <style>
@@ -241,11 +212,11 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
 # ---------- Tab-uri ----------
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     t['tab1'], t['tab2'], t['tab3'], t['tab4'], t['tab5'], "💬 Asistent AI"
 ])
-
 # ================================================================
 # TAB 1: ACASA
 # ================================================================
