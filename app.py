@@ -1407,35 +1407,85 @@ with tab5:
         """, unsafe_allow_html=True)
 
 # ================================================================
-# TAB 6: ASISTENT AI
+# TAB 6: ASISTENT AI - VERSIONEA FINALĂ
 # ================================================================
 with tab6:
     st.title("💬 " + ("Asistent AI" if st.session_state.lang == 'ro' else "AI Assistant"))
     
+    # CSS pentru design
+    st.markdown("""
+    <style>
+    .ai-input-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px 24px 16px 24px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.04);
+        margin-bottom: 12px;
+    }
+    .ai-input-card textarea {
+        border-radius: 10px !important;
+        border: 2px solid #e8ecf0 !important;
+        font-size: 15px !important;
+        padding: 12px 16px !important;
+        transition: all 0.2s ease !important;
+        background: #fafbfc !important;
+    }
+    .ai-input-card textarea:focus {
+        border-color: #667eea !important;
+        background: white !important;
+        box-shadow: 0 0 0 4px rgba(102,126,234,0.06) !important;
+    }
+    .ai-input-card textarea::placeholder {
+        color: #a0aec0 !important;
+    }
+    .ai-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ai-label .badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 0.6rem;
+        padding: 2px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+    .ai-label .badge-free {
+        background: #e8ecf0;
+        color: #555;
+        font-size: 0.6rem;
+        padding: 2px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    .stButton > button {
+        border-radius: 10px !important;
+        font-weight: 500 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Descriere
     if st.session_state.lang == 'ro':
         st.markdown("""
-        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
-            🤖 Asistentul AI poate răspunde la întrebări despre:
-            • Optimizarea tolerantelor și arhitectura multi-agent
-            • Neuronul fracționar și derivata Grunwald-Letnikov
-            • Teorema colțurilor și demonstrația matematică
-            • Interpretarea rezultatelor și graficele
-            • Comparația cu metodele clasice
+        <div style="background: rgba(128,128,128,0.04); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: #555;">
+            🤖 Asistentul AI poate răspunde la întrebări despre proiectul tău.
             </p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
-        <div style="background: rgba(128,128,128,0.06); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
-            🤖 The AI assistant can answer questions about:
-            • Tolerance optimization and multi-agent architecture
-            • Fractional neuron and Grunwald-Letnikov derivative
-            • Corner theorem and mathematical proof
-            • Interpreting results and charts
-            • Comparison with classical methods
+        <div style="background: rgba(128,128,128,0.04); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: #555;">
+            🤖 The AI assistant can answer questions about your project.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -1448,63 +1498,80 @@ with tab6:
     col_question, col_history = st.columns([2, 1])
     
     with col_question:
-        # Input întrebare
-        intrebare = st.text_area(
-            "Întrebarea ta:" if st.session_state.lang == 'ro' else "Your question:",
-            placeholder="Ex: Cum funcționează neuronul fracționar?" if st.session_state.lang == 'ro' else "E.g.: How does the fractional neuron work?",
-            height=100,
-            key="ai_question_input"
-        )
+        # Card pentru input
+        st.markdown("""
+        <div class="ai-input-card">
+            <div class="ai-label">
+                <span>💬 Întrebarea ta</span>
+                <span class="badge">Gemini 3.5</span>
+                <span class="badge-free">Gratuit</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
-        with col_btn1:
-            ask_button = st.button(
-                "🔍 Întreabă" if st.session_state.lang == 'ro' else "🔍 Ask",
-                type="primary",
-                use_container_width=True,
-                key="ai_ask_btn"
+        # Formularul
+        with st.form(key="ai_form", clear_on_submit=True):
+            intrebare = st.text_area(
+                label="",
+                placeholder="Ex: Cum funcționează neuronul fracționar?" if st.session_state.lang == 'ro' else "E.g.: How does the fractional neuron work?",
+                height=100,
+                key="ai_question_input",
+                label_visibility="collapsed"
             )
-        with col_btn2:
-            if st.button(
-                "🗑️ Șterge istoric" if st.session_state.lang == 'ro' else "🗑️ Clear history",
-                use_container_width=True,
-                key="ai_clear_btn"
-            ):
-                st.session_state.chat_history = []
-                st.rerun()
-        with col_btn3:
-            # Indicator stare API
-            api_key = st.secrets.get("GEMINI_API_KEY", "")
-            if api_key and GEMINI_AVAILABLE:
-                st.success("✅ API conectat" if st.session_state.lang == 'ro' else "✅ API connected")
-            else:
-                st.warning("⚠️ API offline" if st.session_state.lang == 'ro' else "⚠️ API offline")
+            
+            col_btn1, col_btn2 = st.columns([1, 3])
+            with col_btn1:
+                ask_button = st.form_submit_button(
+                    "🚀 " + ("Trimite" if st.session_state.lang == 'ro' else "Send"),
+                    type="primary",
+                    use_container_width=True
+                )
+        
+        # Butonul de ștergere istoric
+        if st.button(
+            "🗑️ " + ("Șterge istoric" if st.session_state.lang == 'ro' else "Clear history"),
+            use_container_width=True,
+            key="ai_clear_btn"
+        ):
+            st.session_state.chat_history = []
+            st.rerun()
     
     with col_history:
-        st.markdown(f"### 📊 Statistici")
+        st.markdown("### 📊 Statistici")
         total_q = len([m for m in st.session_state.chat_history if m['role'] == 'user'])
         total_a = len([m for m in st.session_state.chat_history if m['role'] == 'assistant'])
-        st.metric("Întrebări" if st.session_state.lang == 'ro' else "Questions", total_q)
-        st.metric("Răspunsuri" if st.session_state.lang == 'ro' else "Answers", total_a)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("💬 Întrebări" if st.session_state.lang == 'ro' else "💬 Questions", total_q)
+        with col2:
+            st.metric("🤖 Răspunsuri" if st.session_state.lang == 'ro' else "🤖 Answers", total_a)
+        
+        if st.session_state.chat_history:
+            st.divider()
+            st.caption("📝 " + ("Ultima întrebare:" if st.session_state.lang == 'ro' else "Last question:"))
+            last_q = st.session_state.chat_history[-2]['content'] if len(st.session_state.chat_history) >= 2 else "—"
+            st.info(last_q[:60] + "..." if len(last_q) > 60 else last_q)
     
     # Afișare istoric
     if st.session_state.chat_history:
         st.divider()
-        st.markdown(f"### 💬 " + ("Conversație" if st.session_state.lang == 'ro' else "Conversation"))
+        st.markdown("### 💬 " + ("Conversație" if st.session_state.lang == 'ro' else "Conversation"))
         
-        for msg in st.session_state.chat_history:
-            if msg['role'] == 'user':
-                st.chat_message("user").write(msg['content'])
-            else:
-                st.chat_message("assistant").write(msg['content'])
+        # Container scrollabil pentru istoric
+        with st.container():
+            for msg in st.session_state.chat_history:
+                if msg['role'] == 'user':
+                    st.chat_message("user").write(msg['content'])
+                else:
+                    st.chat_message("assistant").write(msg['content'])
     
     # Procesare întrebare
     if ask_button and intrebare:
         with st.spinner("Se generează răspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
-            # Adăugăm întrebarea în istoric
             st.session_state.chat_history.append({'role': 'user', 'content': intrebare})
             
-            # Construim contextul pentru Gemini
+            # Construim contextul
             if st.session_state.lang == 'ro':
                 context = f"""
                 Ești un asistent AI specializat pentru un proiect de cercetare despre optimizarea tolerantelor dimensionale.
@@ -1523,12 +1590,7 @@ with tab6:
                 • Cost = sumă(1/toleranță)
                 • Joc = R_gaura - R_stift - distanța_centre
                 
-                CUM RĂSPUNZI:
-                • Răspunde în limba română
-                • Răspunde clar, concis și precis
-                • Folosește termeni tehnici corecți
-                • Oferă explicații intuitive
-                • Dacă nu știi ceva, spune sincer
+                Răspunde în limba română, clar și concis.
                 """
             else:
                 context = f"""
@@ -1548,45 +1610,25 @@ with tab6:
                 • Cost = sum(1/tolerance)
                 • Gap = R_hole - R_pin - center_distance
                 
-                HOW TO RESPOND:
-                • Respond in English
-                • Respond clearly, concisely and precisely
-                • Use correct technical terms
-                • Provide intuitive explanations
-                • If you don't know something, say so honestly
+                Respond in English, clearly and concisely.
                 """
             
-            # Adăugăm istoricul conversației (ultimele 5 mesaje)
-            conversation_context = context + "\n\nISTORIC CONVERSAȚIE:\n"
-            for msg in st.session_state.chat_history[-5:]:
-                role = "Utilizator" if msg['role'] == 'user' else "Asistent"
-                conversation_context += f"{role}: {msg['content']}\n"
-            
-            conversation_context += f"\nÎNTREBARE: {intrebare}\n\nRĂSPUNS:"
+            conversation_context = context + f"\n\nÎNTREBARE: {intrebare}\n\nRĂSPUNS:"
             
             try:
-                # Ia cheia API din secrets
                 api_key = st.secrets.get("GEMINI_API_KEY", "")
                 
                 if not api_key:
-                    st.error("❌ Cheia API Gemini nu este configurată. Adaugă GEMINI_API_KEY în Streamlit Cloud Secrets.")
+                    st.error("❌ Cheia API nu este configurată.")
                     st.session_state.chat_history.append({
                         'role': 'assistant',
-                        'content': "⚠️ " + ("Cheia API nu este configurată. Adaugă GEMINI_API_KEY în Streamlit Cloud Secrets." if st.session_state.lang == 'ro' else "API key not configured. Add GEMINI_API_KEY in Streamlit Cloud Secrets.")
-                    })
-                elif not GEMINI_AVAILABLE:
-                    st.error("❌ Biblioteca google-generativeai nu este instalată. Adaugă google-generativeai în requirements.txt.")
-                    st.session_state.chat_history.append({
-                        'role': 'assistant',
-                        'content': "⚠️ " + ("Biblioteca google-generativeai nu este instalată. Adaugă google-generativeai în requirements.txt." if st.session_state.lang == 'ro' else "google-generativeai library not installed. Add google-generativeai to requirements.txt.")
+                        'content': "⚠️ Cheia API nu este configurată."
                     })
                 else:
-                    # Configurare Gemini
                     genai.configure(api_key=api_key)
                     
-                    # Folosim modelul
                     try:
-                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        model = genai.GenerativeModel('gemini-3.5-flash')
                         response = model.generate_content(conversation_context)
                         
                         if response and response.text:
@@ -1595,49 +1637,24 @@ with tab6:
                                 'role': 'assistant',
                                 'content': raspuns
                             })
-                            st.rerun()
                         else:
-                            st.error("❌ " + ("Nu s-a primit un răspuns valid." if st.session_state.lang == 'ro' else "No valid response received."))
+                            st.error("❌ Nu s-a primit răspuns.")
+                            st.session_state.chat_history.append({
+                                'role': 'assistant',
+                                'content': "⚠️ Nu s-a primit un răspuns valid."
+                            })
                     except Exception as e:
-                        st.error(f"❌ {str(e)}")
+                        st.error(f"❌ Eroare: {str(e)}")
                         st.session_state.chat_history.append({
                             'role': 'assistant',
-                            'content': f"⚠️ Eroare: {str(e)[:150]}..."
+                            'content': f"⚠️ Eroare: {str(e)[:150]}"
                         })
                         
             except Exception as e:
                 st.error(f"❌ {str(e)}")
                 st.session_state.chat_history.append({
                     'role': 'assistant',
-                    'content': f"⚠️ Eroare: {str(e)[:150]}..."
+                    'content': f"⚠️ Eroare: {str(e)[:150]}"
                 })
-    
-    # Întrebări rapide
-    st.divider()
-    st.markdown(f"### ⚡ " + ("Întrebări rapide" if st.session_state.lang == 'ro' else "Quick questions"))
-    
-    quick_questions_ro = [
-        "Ce este Beta și cum se calculează?",
-        "Cum funcționează teorema colțurilor?",
-        "Care este diferența față de metodele clasice?",
-        "Ce face neuronul fracționar?",
-        "Cum interpretez graficul costului?"
-    ]
-    
-    quick_questions_en = [
-        "What is Beta and how is it calculated?",
-        "How does the corner theorem work?",
-        "What's the difference from classical methods?",
-        "What does the fractional neuron do?",
-        "How do I interpret the cost chart?"
-    ]
-    
-    quick_questions = quick_questions_ro if st.session_state.lang == 'ro' else quick_questions_en
-    
-    cols = st.columns(5)
-    for i, q in enumerate(quick_questions):
-        with cols[i]:
-            if st.button(q[:20] + "...", key=f"quick_{i}", use_container_width=True):
-                # Setăm întrebarea în input
-                st.session_state.ai_question_input = q
-                st.rerun()
+            
+            st.rerun()
