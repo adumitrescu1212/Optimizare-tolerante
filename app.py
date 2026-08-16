@@ -115,6 +115,7 @@ with st.sidebar:
     </style>
     """, unsafe_allow_html=True)
     
+       col1, col2, col3 = st.columns([1, 1, 1])
     col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("RO", use_container_width=True, key="btn_ro"):
@@ -122,6 +123,44 @@ with st.sidebar:
     with col2:
         if st.button("EN", use_container_width=True, key="btn_en"):
             st.session_state.lang = 'en'
+    with col3:
+        theme_icon = "🌙" if st.session_state.theme == 'light' else "☀️"
+        if st.button(theme_icon, use_container_width=True, key="btn_theme"):
+            st.session_state.theme = 'dark' if st.session_state.theme == 'light' else 'light'
+    
+    st.divider()
+    st.header(t['params'])
+    
+    alpha = st.slider(t['alpha'], 0.10, 1.00, 0.70, 0.05, help=t['alpha_help'])
+    delta = st.slider(t['delta'], 0.01, 0.50, 0.20, 0.01, help=t['delta_help'])
+    tol_init = st.slider(t['tol'], 0.010, 1.000, 0.500, 0.005, help=t['tol_help'])
+    
+    st.divider()
+    run = st.button(t['run'], type="primary", use_container_width=True)
+    mod_rapid = st.checkbox("⚡ Mod rapid", value=False, 
+                            help="Optimizare fara animatie. Rezultate instant.")
+# ---------- Dark theme ----------
+if st.session_state.theme == 'dark':
+    st.markdown("""
+    <style>
+        .stApp { background-color: #0e1117 !important; color: #fafafa !important; }
+        div[style*="background: #f8f9fa"] { background-color: #1a1c23 !important; border-color: #2d3139 !important; }
+        div[style*="background: #f0f4ff"] { background-color: #1a1c23 !important; border-color: #2d3139 !important; }
+        div[style*="background: linear-gradient"] { opacity: 0.9; }
+        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4,
+        .stMarkdown li, .stMarkdown strong { color: #e0e0e0 !important; }
+        div[style*="background: linear-gradient"] p,
+        div[style*="background: linear-gradient"] strong { color: white !important; }
+        div[data-testid="stMetric"] { background-color: #1a1c23 !important; }
+        div[data-testid="stMetric"] label { color: #999 !important; }
+        div[data-testid="stMetric"] div { color: #fafafa !important; }
+        blockquote { background-color: #1a1c23 !important; border-left: 4px solid #667eea !important; color: #e0e0e0 !important; }
+        .stDataFrame > div > div { background-color: #1a1c23 !important; }
+        div[data-testid="stAlert"] { background-color: #1a1c23 !important; }
+        .stTabs [data-baseweb="tab-list"] { background-color: #1a1c23 !important; }
+        .stTabs [aria-selected="true"] { background-color: #2d3139 !important; color: #fafafa !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
 # ---------- CSS tab-uri ----------
 # ---------- CSS modern ----------
