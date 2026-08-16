@@ -4,8 +4,7 @@
 **Sistem Multi-Agent cu Neuron Fractionar pentru Optimizarea Toleranțelor Dimensionale**
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://optimizare-tolerante-dd2026.streamlit.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 ---
 
 ## 📋 Despre proiect
