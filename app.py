@@ -947,6 +947,18 @@ with tab4:
         assemble correctly, regardless of manufacturing variations. Convergence is reached in approximately
         100–110 iterations (under one second on a standard laptop).
         """)
+
+            # ---------- FOOTER CU COPYRIGHT ----------
+    st.divider()
+    st.markdown("""
+    <div style="text-align: center; color: #888; font-size: 0.8rem; padding: 20px 0;">
+        <p>© 2026 <strong>Optimizare Tolerante DD</strong>. Toate drepturile rezervate.</p>
+        <p>Dezvoltat de Adrian & Andreea Dumitrescu | 
+           <a href="https://github.com/adumitrescu1212/optimizare-tolerante" target="_blank">GitHub</a> | 
+           <a href="https://github.com/adumitrescu1212/optimizare-tolerante/blob/main/LICENSE" target="_blank">Licență MIT</a>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 # ================================================================
 # TAB 5: MATEMATICA
 # ================================================================
