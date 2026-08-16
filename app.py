@@ -116,7 +116,6 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
        col1, col2, col3 = st.columns([1, 1, 1])
-    col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("RO", use_container_width=True, key="btn_ro"):
             st.session_state.lang = 'ro'
