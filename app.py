@@ -1374,7 +1374,7 @@ with tab5:
         """, unsafe_allow_html=True)
 
 # ================================================================
-# TAB 6: ASISTENT AI - VERSIONEA CU REST API
+# TAB 6: ASISTENT AI - VERSIONEA CU REÎNCERCARE AUTOMATĂ
 # ================================================================
 with tab6:
     st.title("💬 " + ("Asistent AI" if st.session_state.lang == 'ro' else "AI Assistant"))
@@ -1470,7 +1470,7 @@ with tab6:
         <div class="ai-input-card">
             <div class="ai-label">
                 <span>💬 Întrebarea ta</span>
-                <span class="badge">Gemini 3.5</span>
+                <span class="badge">Gemini 3.7</span>
                 <span class="badge-free">Gratuit</span>
             </div>
         </div>
@@ -1531,7 +1531,7 @@ with tab6:
             else:
                 st.chat_message("assistant").write(msg['content'])
     
-    # Procesare întrebare - VERSIONEA CU REST API (fără google-generativeai)
+    # Procesare întrebare - cu reîncercare automată
     if ask_button and intrebare:
         with st.spinner("Se generează răspunsul..." if st.session_state.lang == 'ro' else "Generating answer..."):
             st.session_state.chat_history.append({'role': 'user', 'content': intrebare})
@@ -1590,8 +1590,14 @@ with tab6:
                         'content': "⚠️ Cheia API nu este configurată."
                     })
                 else:
-                    # Folosește REST API direct (fără google-generativeai)
-                    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key={api_key}"
+                    # Modele de încercat (de la cel mai nou la cel mai vechi)
+                    models_to_try = [
+                        "gemini-3.7-flash",
+                        "gemini-3.6-flash",
+                        "gemini-3.5-flash",
+                        "gemini-2.5-flash",
+                        "gemini-2.5-flash-lite"
+                    ]
                     
                     payload = {
                         "contents": [{
@@ -1601,27 +1607,45 @@ with tab6:
                     
                     headers = {"Content-Type": "application/json"}
                     
-                    response = requests.post(url, json=payload, headers=headers, timeout=30)
+                    raspuns = None
+                    eroare_finala = None
                     
-                    if response.status_code == 200:
-                        data = response.json()
-                        if 'candidates' in data and len(data['candidates']) > 0:
-                            raspuns = data['candidates'][0]['content']['parts'][0]['text']
-                            st.session_state.chat_history.append({
-                                'role': 'assistant',
-                                'content': raspuns
-                            })
-                        else:
-                            st.error("❌ Nu s-a primit răspuns.")
-                            st.session_state.chat_history.append({
-                                'role': 'assistant',
-                                'content': "⚠️ Nu s-a primit un răspuns valid."
-                            })
-                    else:
-                        st.error(f"❌ Eroare API: {response.status_code}")
+                    # Încearcă fiecare model cu reîncercări
+                    for model in models_to_try:
+                        for incercare in range(3):
+                            try:
+                                url = f"https://generativelanguage.googleapis.com/v1/models/{model}:generateContent?key={api_key}"
+                                response = requests.post(url, json=payload, headers=headers, timeout=30)
+                                
+                                if response.status_code == 200:
+                                    data = response.json()
+                                    if 'candidates' in data and len(data['candidates']) > 0:
+                                        raspuns = data['candidates'][0]['content']['parts'][0]['text']
+                                        break
+                                elif response.status_code == 503:
+                                    time.sleep(2 ** incercare)
+                                    continue
+                                else:
+                                    eroare_finala = f"{response.status_code}"
+                                    break
+                            except Exception as e:
+                                eroare_finala = str(e)
+                                time.sleep(1)
+                                continue
+                        
+                        if raspuns:
+                            break
+                    
+                    if raspuns:
                         st.session_state.chat_history.append({
                             'role': 'assistant',
-                            'content': f"⚠️ Eroare: {response.status_code}"
+                            'content': raspuns
+                        })
+                    else:
+                        st.error(f"❌ Eroare: {eroare_finala}")
+                        st.session_state.chat_history.append({
+                            'role': 'assistant',
+                            'content': f"⚠️ Nu am putut genera răspuns. Încearcă din nou."
                         })
                         
             except Exception as e:
